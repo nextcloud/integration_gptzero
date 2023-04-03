@@ -40,11 +40,15 @@ use OCP\Http\Client\IClientService;
 use OCP\Share\IManager as ShareManager;
 
 use OCA\GPTZero\AppInfo\Application;
+use OCP\ICacheFactory;
+use OCP\ICache;
 
 /**
  * Service to make requests to the GPTZero API
  */
 class GPTZeroAPIService {
+	const GPTZero_RESPONSE_CACHE_TTL = 3600;
+
 	/** @var string */
 	private $appName;
 
@@ -69,6 +73,9 @@ class GPTZeroAPIService {
 	/** @var IURLGenerator */
 	private $urlGenerator;
 
+	/** @var ICache */
+	private $cache;
+
 	/** @var string|null */
 	private $apiToken;
 
@@ -80,7 +87,8 @@ class GPTZeroAPIService {
 		IRootFolder $root,
 		ShareManager $shareManager,
 		IURLGenerator $urlGenerator,
-		IClientService $clientService
+		IClientService $clientService,
+		ICacheFactory $cacheFactory,
 	) {
 		$this->appName = $appName;
 		$this->logger = $logger;
@@ -90,27 +98,33 @@ class GPTZeroAPIService {
 		$this->root = $root;
 		$this->shareManager = $shareManager;
 		$this->urlGenerator = $urlGenerator;
+		$this->cache = $cacheFactory->createDistributed('reference');
 		$this->apiToken = $this->config->getAppValue(Application::APP_ID, 'api_token');
 	}
 
 	public function postPredictText(string $userId, string $text) {
-		$params = [
-			'body' => [
-				'document' => $text,
-			],
-		];
-		if (isset($this->apiToken) && $this->apiToken !== '') {
-			$params['headers'] = [
-				'X-Api-Key' => $this->apiToken,
-			];
+		// Check if the text is already processed through the API and cached
+		$cacheKey = $this->getCacheKey($text);
+		$cached = $this->cache->get($cacheKey);
+		if ($cached) {
+			return $cached;
 		}
-		$result = $this->request($userId, 'v2/predict/text', $params, 'POST');
-		return $result;
+		$response = $this->request($userId, 'v2/predict/text', [
+			'document' => $text,
+		], 'POST');
+		if (isset($response['documents'])) {
+			$this->cache->set($cacheKey, $response, self::GPTZero_RESPONSE_CACHE_TTL);
+		}
+		return $response;
 	}
 
 	public function postPredictFiles(string $userId, array $fileIds) {
 		// TODO
 		return null;
+	}
+
+	private function getCacheKey(string $text) {
+		return 'gptzero_' . md5($text);
 	}
 
 	/**
@@ -124,13 +138,13 @@ class GPTZeroAPIService {
 	 */
 	public function request(string $userId, string $endPoint, array $params = [], string $method = 'GET',
 							bool $jsonResponse = true) {
-		$accessToken = $this->config->getUserValue($userId, Application::APP_ID, 'token');
+		$apiToken = $this->config->getAppValue(Application::APP_ID, 'api_token');
 		try {
 			$url = Application::GPTZero_API_BASE_URL . '/' . $endPoint;
 			$options = [
 				'headers' => [
-					'User-Agent'  => Application::INTEGRATION_USER_AGENT,
-					'Authorization' => 'Bearer ' . $accessToken,
+					'User-Agent' => Application::INTEGRATION_USER_AGENT,
+					'X-Api-Key' => $apiToken
 				],
 			];
 
