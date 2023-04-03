@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<info>
+	<id>integration_gptzero</id>
+	<name>GPTZero integration</name>
+	<summary>Integration of GPTZero</summary>
+	<description><![CDATA[GPTZero integration adds ability to identify which text were written by an AI.]]></description>
+	<version>0.1.0</version>
+	<licence>agpl</licence>
+	<author mail="andrey18106x@gmail.com" homepage="https://github.com/andrey18106">Andrey Borysenko</author>
+	<author mail="bigcat88@icloud.com" homepage="https://github.com/bigcat88">Alexander Piskun</author>
+	<namespace>GPTZero</namespace>
+	<documentation>
+		<developer>https://github.com/cloud-py-api/integration_gptzero</developer>
+	</documentation>
+	<category>integration</category>
+	<website>https://github.com/cloud-py-api/integration_gptzero</website>
+	<bugs>https://github.com/cloud-py-api/integration_gptzero/issues</bugs>
+	<repository type="git">https://github.com/cloud-py-api/integration_gptzero.git</repository>
+	<dependencies>
+		<nextcloud min-version="26" max-version="27"/>
+	</dependencies>
+	<settings>
+		<admin>OCA\GPTZero\Settings\Admin</admin>
+		<admin-section>OCA\GPTZero\Settings\AdminSection</admin-section>
+	</settings>
+	<navigations>
+		<navigation>
+			<name>GPTZero</name>
+			<route>integration_gptzero.page.index</route>
+			<order>1</order>
+		</navigation>
+	</navigations>
+</info>
