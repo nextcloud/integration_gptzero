@@ -3,6 +3,7 @@
 		<NcAppContent>
 			<div class="gptzero-app">
 				<h2>
+					<GPTZeroIcon class="gptzero-icon" />
 					{{ t('integration_gptzero', 'GPTZero integration') }}
 				</h2>
 				<textarea v-model="text"
@@ -38,6 +39,7 @@ import { showError } from '@nextcloud/dialogs'
 import NcContent from '@nextcloud/vue/dist/Components/NcContent.js'
 import NcAppContent from '@nextcloud/vue/dist/Components/NcAppContent.js'
 import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
+import GPTZeroIcon from './components/icons/GPTZeroIcon.vue'
 
 export default {
 	name: 'App',
@@ -45,6 +47,7 @@ export default {
 		NcContent,
 		NcAppContent,
 		NcButton,
+		GPTZeroIcon,
 	},
 	data() {
 		return {
@@ -64,7 +67,7 @@ export default {
 				this.predicting = true
 				this.predictResult = {}
 				axios.post(generateUrl('/apps/integration_gptzero/predict/text'), {
-					text: this.text,
+					text: this.text.trim().replace(/(?:\r\n|\r|\n)/g, '\\n'),
 				}).then(res => {
 					console.debug(res)
 					this.predictResult = res.data
@@ -111,6 +114,14 @@ Many countries have committed to reducing their carbon footprint through initiat
 
 		button:first-child {
 			margin-right: 20px;
+		}
+	}
+
+	h2 {
+		display: flex;
+
+		.gptzero-icon {
+			margin-right: 10px;
 		}
 	}
 }
