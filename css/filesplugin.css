@@ -1,0 +1,3 @@
+.action-gptzeroscan img {
+	filter: var(--background-invert-if-dark);
+}

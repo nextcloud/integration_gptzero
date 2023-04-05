@@ -53,6 +53,16 @@ class Application extends App implements IBootstrap {
 	 */
 	public function __construct(array $urlParams = []) {
 		parent::__construct(self::APP_ID, $urlParams);
+
+		// TODO: Add this later
+		// $eventDispatcher = \OCP\Server::get(\OCP\EventDispatcher\IEventDispatcher::class);
+		// /**
+		//  * @psalm-suppress UndefinedClass
+		//  */
+		// $eventDispatcher->addListener(\OCA\Files\Event\LoadAdditionalScriptsEvent::class, function () {
+		// 	\OCP\Util::addScript(self::APP_ID, self::APP_ID . '-filesplugin');
+		// 	\OCP\Util::addStyle(self::APP_ID, 'filesplugin');
+		// });
 	}
 
 	public function register(IRegistrationContext $context): void {
