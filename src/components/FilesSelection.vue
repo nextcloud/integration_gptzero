@@ -6,7 +6,7 @@
 		<div class="files-selection__files">
 			<ul>
 				<NcListItem v-for="file in files"
-					:key="file.id"
+					:key="file.fileid"
 					:title="file.path"
 					:href="pathToFilesApp(file.name, file.path)"
 					:compact="true"

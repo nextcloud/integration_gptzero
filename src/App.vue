@@ -204,7 +204,7 @@ export default {
 				})
 		},
 		removeFile(file) {
-			this.selectedFiles = this.selectedFiles.filter(f => f.id !== file.id)
+			this.selectedFiles = this.selectedFiles.filter(f => f.fileid !== file.fileid)
 		},
 		getFilesPicker(title) {
 			return getFilePickerBuilder(title)
