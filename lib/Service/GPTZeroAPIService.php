@@ -119,8 +119,31 @@ class GPTZeroAPIService {
 	}
 
 	public function postPredictFiles(string $userId, array $fileIds) {
-		// TODO
-		return null;
+		// TODO: Fix this
+		$userFolder = $this->root->getUserFolder($userId);
+		$multipart = [];
+		foreach ($fileIds as $fileId) {
+			$nodes = $userFolder->getById($fileId);
+			if (count($nodes) === 1) {
+				/** @var \OCP\Files\File */
+				$file = $nodes[0];
+				$multipart[] = [
+					'name' => 'files',
+					'contents' => $file->getContent(),
+					'filename' => $file->getName(),
+					'headers' => [
+						'Content-Type' => $file->getMimeType(),
+					]
+				];
+			}
+		}
+		$response = $this->request($userId, 'v2/predict/files', [
+			'multipart' => $multipart,
+			'headers' => [
+				'Content-Type' => 'multipart/form-data',
+			],
+		], 'POST');
+		return $response;
 	}
 
 	private function getCacheKey(string $text) {

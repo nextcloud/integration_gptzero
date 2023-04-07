@@ -1,9 +1,9 @@
 /**
- * @copyright Copyright (c) 2022 Andrey Borysenko <andrey18106x@gmail.com>
+ * @copyright Copyright (c) 2023 Andrey Borysenko <andrey18106x@gmail.com>
  *
- * @copyright Copyright (c) 2022 Alexander Piskun <bigcat88@icloud.com>
+ * @copyright Copyright (c) 2023 Alexander Piskun <bigcat88@icloud.com>
  *
- * @author 2022 Andrey Borysenko <andrey18106x@gmail.com>
+ * @author 2023 Andrey Borysenko <andrey18106x@gmail.com>
  *
  * @license AGPL-3.0-or-later
  *
@@ -27,14 +27,56 @@ import axios from '@nextcloud/axios'
 // eslint-disable-next-line
 import { generateUrl, imagePath } from '@nextcloud/router'
 
+function generateGPTZeroAppUrl(filePath) {
+	return generateUrl('/apps/integration_gptzero?filePath={path}', { path: filePath })
+}
+
+function navigateToAppPage(name, context) {
+	// Navigate to the app page by generated url
+	let filePath = name
+	if (context.dir !== '/') {
+		filePath = context.dir + '/' + name
+	} else {
+		filePath = context.dir + name
+	}
+	window.location.href = generateGPTZeroAppUrl(filePath)
+}
+
 OCA.Files.fileActions.registerAction({
 	name: 'gptzeroScan',
 	displayName: t('integration_gptzero', 'Scan for AI'),
-	mime: 'text/*',
+	mime: 'application/pdf',
 	permissions: OC.PERMISSION_READ,
 	icon: imagePath('integration_gptzero', 'app-dark.svg'),
 	actionHandler: (name, context) => {
 		// TODO: Implement text scanning
 		console.debug(name, context)
+		navigateToAppPage(name, context)
+	},
+})
+
+OCA.Files.fileActions.registerAction({
+	name: 'gptzeroScan',
+	displayName: t('integration_gptzero', 'Scan for AI'),
+	mime: 'text/plain',
+	permissions: OC.PERMISSION_READ,
+	icon: imagePath('integration_gptzero', 'app-dark.svg'),
+	actionHandler: (name, context) => {
+		// TODO: Implement text scanning
+		console.debug(name, context)
+		navigateToAppPage(name, context)
+	},
+})
+
+OCA.Files.fileActions.registerAction({
+	name: 'gptzeroScan',
+	displayName: t('integration_gptzero', 'Scan for AI'),
+	mime: 'application/msword',
+	permissions: OC.PERMISSION_READ,
+	icon: imagePath('integration_gptzero', 'app-dark.svg'),
+	actionHandler: (name, context) => {
+		// TODO: Implement text scanning
+		console.debug(name, context)
+		navigateToAppPage(name, context)
 	},
 })

@@ -55,9 +55,11 @@ class Admin implements ISettings {
 	 */
 	public function getForm(): TemplateResponse {
 		$apiToken = $this->config->getAppValue(Application::APP_ID, 'api_token');
+		$fileActionsMenu = $this->config->getAppValue(Application::APP_ID, 'file_actions_menu', '1');
 
 		$adminConfig = [
 			'api_token' => $apiToken,
+			'file_actions_menu' => $fileActionsMenu === '1' ? true : false,
 		];
 		$this->initialStateService->provideInitialState('admin-config', $adminConfig);
 		return new TemplateResponse(Application::APP_ID, 'adminSettings');

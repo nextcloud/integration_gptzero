@@ -5,7 +5,13 @@
 			{{ t('integration_gptzero', 'GPTZero integration') }}
 		</h2>
 		<p class="settings-hint">
-			{{ t('integration_gptzero', 'Put the "API key" below.') }}
+			{{ t('integration_gptzero', 'You can obtain it in your GPTZero app dashboard.') }}
+			<a class="external" href="https://app.gptzero.me/app/api">
+				{{ t('integration_gptzero', 'GPTZero API keys') }}
+			</a>
+		</p>
+		<p class="settings-hint">
+			{{ t('integration_gptzero', 'Put the "API key" below. It will be used by all Nextcloud users to perform requests to GPTZero service.') }}
 		</p>
 		<div class="field">
 			<label for="gptzero-api-token">
@@ -20,30 +26,36 @@
 				@focus="readonly = false"
 				@input="onInput">
 		</div>
+		<div class="field">
+			<NcCheckboxRadioSwitch
+				:checked="state.file_actions_menu"
+				@update:checked="onCheckboxChanged($event, 'file_actions_menu')">
+				{{ t('integration_gptzero', 'Enable GPTZero file actions menu') }}
+			</NcCheckboxRadioSwitch>
+		</div>
 	</div>
 </template>
 
 <script>
-import KeyIcon from 'vue-material-design-icons/Key.vue'
-
 import axios from '@nextcloud/axios'
 import { generateUrl } from '@nextcloud/router'
 import { loadState } from '@nextcloud/initial-state'
 import { delay } from '../utils.js'
 import { showSuccess, showError } from '@nextcloud/dialogs'
 
+import NcCheckboxRadioSwitch from '@nextcloud/vue/dist/Components/NcCheckboxRadioSwitch.js'
+
 import GPTZeroIcon from './icons/GPTZeroIcon.vue'
+import KeyIcon from 'vue-material-design-icons/Key.vue'
 
 export default {
 	name: 'AdminSettings',
-
 	components: {
+		NcCheckboxRadioSwitch,
 		GPTZeroIcon,
 		KeyIcon,
 	},
-
 	props: [],
-
 	data() {
 		return {
 			state: loadState('integration_gptzero', 'admin-config'),
@@ -51,18 +63,16 @@ export default {
 			readonly: true,
 		}
 	},
-
 	watch: {
 	},
-
 	mounted() {
 	},
-
 	methods: {
 		onInput() {
 			delay(() => {
 				this.saveOptions({
 					api_token: this.state.api_token,
+					file_actions_menu: this.state.file_actions_menu,
 				})
 			}, 2000)()
 		},
@@ -80,6 +90,10 @@ export default {
 				)
 				console.error(error)
 			})
+		},
+		onCheckboxChanged(newValue, key) {
+			this.state[key] = newValue
+			this.saveOptions({ [key]: this.state[key] ? '1' : '0' })
 		},
 	},
 }

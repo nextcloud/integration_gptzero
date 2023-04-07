@@ -54,15 +54,15 @@ class Application extends App implements IBootstrap {
 	public function __construct(array $urlParams = []) {
 		parent::__construct(self::APP_ID, $urlParams);
 
-		// TODO: Add this later
-		// $eventDispatcher = \OCP\Server::get(\OCP\EventDispatcher\IEventDispatcher::class);
-		// /**
-		//  * @psalm-suppress UndefinedClass
-		//  */
-		// $eventDispatcher->addListener(\OCA\Files\Event\LoadAdditionalScriptsEvent::class, function () {
-		// 	\OCP\Util::addScript(self::APP_ID, self::APP_ID . '-filesplugin');
-		// 	\OCP\Util::addStyle(self::APP_ID, 'filesplugin');
-		// });
+		$config = \OCP\Server::get(\OCP\IConfig::class);
+		$fileActionsMenu = $config->getAppValue(self::APP_ID, 'file_actions_menu', '1');
+		$eventDispatcher = \OCP\Server::get(\OCP\EventDispatcher\IEventDispatcher::class);
+		if ($fileActionsMenu === '1') {
+			$eventDispatcher->addListener(\OCA\Files\Event\LoadAdditionalScriptsEvent::class, function () {
+				\OCP\Util::addScript(self::APP_ID, self::APP_ID . '-filesplugin');
+				\OCP\Util::addStyle(self::APP_ID, 'filesplugin');
+			});
+		}
 	}
 
 	public function register(IRegistrationContext $context): void {
