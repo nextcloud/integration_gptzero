@@ -129,20 +129,39 @@ class GPTZeroAPIService {
 				$file = $nodes[0];
 				$multipart[] = [
 					'name' => 'files',
-					'contents' => $file->getContent(),
+					'contents' => $file->fopen('r'),
 					'filename' => $file->getName(),
 					'headers' => [
 						'Content-Type' => $file->getMimeType(),
-					]
+						'Content-Disposition' => 'form-data; name="files"; filename="' . $file->getName() . '"'
+					],
 				];
 			}
 		}
-		$response = $this->request($userId, 'v2/predict/files', [
-			'multipart' => $multipart,
-			'headers' => [
-				'Content-Type' => 'multipart/form-data',
-			],
-		], 'POST');
+		$apiToken = $this->config->getAppValue(Application::APP_ID, 'api_token');
+		$headers = [
+			'User-Agent' => Application::INTEGRATION_USER_AGENT,
+			'X-Api-Key' => $apiToken,
+			'Content-Type' => 'multipart/form-data',
+			'Accept' => 'application/json',
+		];
+		try {
+			$response = $this->client->post(Application::GPTZero_API_BASE_URL . '/' . 'v2/predict/files', [
+				'multipart' => $multipart,
+				'headers' => $headers,
+			]);
+			$body = $response->getBody();
+			$respCode = $response->getStatusCode();
+
+			if ($respCode >= 400) {
+				return ['error' => $this->l10n->t('Bad credentials')];
+			} else {
+				return json_decode($body, true);
+			}
+		} catch (ClientException $e) {
+			$this->logger->debug('GPTZero API error : '.$e->getMessage(), ['app' => Application::APP_ID]);
+			return ['error' => $e->getMessage()];
+		}
 		return $response;
 	}
 

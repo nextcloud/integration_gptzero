@@ -20,6 +20,7 @@
 		<template v-if="predictResultsHistory.length > 0" #list>
 			<NcAppNavigationItem v-for="historyItem in predictResultsHistory"
 				:key="historyItem.text"
+				:exact="historyItem.text === text"
 				:title="historyItem.text.substring(0, 50)"
 				@click="loadHistoryItem(historyItem)">
 				<template #actions>
@@ -29,6 +30,9 @@
 						</template>
 						{{ t('integration_gtpzero', 'Delete') }}
 					</NcActionButton>
+				</template>
+				<template #icon>
+					<ClipboardTextClockOutline :size="18" />
 				</template>
 			</NcAppNavigationItem>
 		</template>
@@ -63,6 +67,7 @@ import FormatListBulleted from 'vue-material-design-icons/FormatListBulleted.vue
 import ContentSaveAll from 'vue-material-design-icons/ContentSaveAll.vue'
 import NotificationClearAll from 'vue-material-design-icons/NotificationClearAll.vue'
 import OpenInNew from 'vue-material-design-icons/OpenInNew.vue'
+import ClipboardTextClockOutline from 'vue-material-design-icons/ClipboardTextClockOutline.vue'
 
 export default {
 	name: 'GPTZeroNav',
@@ -76,11 +81,16 @@ export default {
 		ContentSaveAll,
 		NotificationClearAll,
 		OpenInNew,
+		ClipboardTextClockOutline,
 	},
 	props: {
 		predictResultsHistory: {
 			type: Array,
 			default: () => [],
+		},
+		text: {
+			type: String,
+			default: '',
 		},
 	},
 	data() {

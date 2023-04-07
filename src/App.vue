@@ -1,6 +1,7 @@
 <template>
 	<NcContent app-name="integration_gptzero">
 		<GPTZeroNav :predict-results-history.sync="predictResultsHistory"
+			:text="text"
 			@load-history-item="loadHistoryItem"
 			@delete-history-item="deleteHistoryItem"
 			@save-history-to-local-storage="saveHistoryToLocalStorage"
@@ -28,6 +29,17 @@
 				<FilesSelection v-else
 					:files="selectedFiles"
 					@remove-file-selection="removeFile" />
+				<div class="terms-of-service">
+					<NcCheckboxRadioSwitch :checked.sync="acceptGPTZeroTermsOfService"
+						style="margin-right: 10px;">
+						{{ t('integration_gptzero', 'I agree to the terms of service') }}
+					</NcCheckboxRadioSwitch>
+					<NcButton href="https://gptzero.me/terms-of-use.html" type="tertiary">
+						<template #icon>
+							<OpenInNew :size="18" />
+						</template>
+					</NcButton>
+				</div>
 				<div class="actions">
 					<NcButton :disabled="predicting"
 						type="primary"
@@ -60,10 +72,6 @@
 						{{ t('integration_gptzero', 'Clear') }}
 					</NcButton>
 				</div>
-				<!-- <textarea v-if="predictResultText !== '{}'"
-					cols="80"
-					rows="5"
-					:value="predictResultText" /> -->
 			</div>
 			<div v-if="'documents' in predictResult" class="documents">
 				<h2>
@@ -86,9 +94,11 @@ import { getFilePickerBuilder, showError, showSuccess } from '@nextcloud/dialogs
 import NcContent from '@nextcloud/vue/dist/Components/NcContent.js'
 import NcAppContent from '@nextcloud/vue/dist/Components/NcAppContent.js'
 import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
+import NcCheckboxRadioSwitch from '@nextcloud/vue/dist/Components/NcCheckboxRadioSwitch.js'
 
 import InformationOutlineIcon from 'vue-material-design-icons/InformationOutline.vue'
 import FileMultiple from 'vue-material-design-icons/FileMultiple.vue'
+import OpenInNew from 'vue-material-design-icons/OpenInNew.vue'
 import GPTZeroIcon from './components/icons/GPTZeroIcon.vue'
 
 import GPTZeroNav from './components/GPTZeroNav.vue'
@@ -103,8 +113,10 @@ export default {
 		NcContent,
 		NcAppContent,
 		NcButton,
+		NcCheckboxRadioSwitch,
 		InformationOutlineIcon,
 		FileMultiple,
+		OpenInNew,
 		GPTZeroIcon,
 		GPTZeroNav,
 		ScanResults,
@@ -118,6 +130,7 @@ export default {
 			predictResultsHistory: [],
 			selectedFiles: [],
 			error: '',
+			acceptGPTZeroTermsOfService: false,
 		}
 	},
 	computed: {
@@ -125,12 +138,22 @@ export default {
 			return JSON.stringify(this.predictResult, null, 2)
 		},
 	},
+	watch: {
+		acceptGPTZeroTermsOfService() {
+			this.saveTermsOfServiceAccept()
+		},
+	},
 	beforeMount() {
 		this.loadHistory()
 		this.loadFileScanFromPath()
+		this.loadTermsOfServiceAccept()
 	},
 	methods: {
 		getResults() {
+			if (!this.acceptGPTZeroTermsOfService) {
+				showError(t('integration_gptzero', 'Please accept the terms of service to continue'))
+				return
+			}
 			if (this.selectedFiles.length > 0) {
 				this.postPredictFiles()
 			} else {
@@ -171,6 +194,11 @@ export default {
 					fileIds: this.selectedFiles.map(f => f.fileid),
 				}).then(res => {
 					console.debug(res)
+					if (res.data.error) {
+						showError(res.data.error)
+						this.predicting = false
+						return
+					}
 					this.predictResult = res.data
 					this.predicting = false
 				}).catch(err => {
@@ -210,6 +238,7 @@ export default {
 			return getFilePickerBuilder(title)
 				.setMultiSelect(true)
 				.setModal(true)
+				.setMimeTypeFilter(['text/plain', 'application/pdf', 'application/msword'])
 				.setType(1)
 				.allowDirectories(false)
 				.build()
@@ -227,6 +256,15 @@ export default {
 						})
 					})
 			}
+		},
+		loadTermsOfServiceAccept() {
+			const accept = localStorage.getItem('gptzero-accept-terms-of-service')
+			if (accept) {
+				this.acceptGPTZeroTermsOfService = JSON.parse(accept)
+			}
+		},
+		saveTermsOfServiceAccept() {
+			localStorage.setItem('gptzero-accept-terms-of-service', JSON.stringify(this.acceptGPTZeroTermsOfService))
 		},
 		loadHistory() {
 			const history = localStorage.getItem('gptzero-predict-results-history')
@@ -297,6 +335,12 @@ Many countries have committed to reducing their carbon footprint through initiat
 
 	textarea {
 		width: auto;
+	}
+
+	.terms-of-service {
+		display: flex;
+		align-items: center;
+		margin: 10px auto;
 	}
 
 	.actions {
