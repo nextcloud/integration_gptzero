@@ -43,6 +43,52 @@ use OCA\GPTZero\AppInfo\Application;
 use OCP\ICacheFactory;
 use OCP\ICache;
 
+
+class GPTZeroMultiFormDataBuilder
+{
+
+	private array $data = [];
+	private string $boundary;
+
+	public function __construct()
+	{
+		$this->boundary = $this->generateBoundary();
+	}
+
+	public function addData(string $name, string $value): self
+	{
+		$this->data[] = [$name, $value];
+		return $this;
+	}
+
+	public function getContentType(): string
+	{
+		return 'multipart/form-data; boundary=' . $this->boundary;
+	}
+
+	public function build(): string
+	{
+		$eol = "\r\n";
+		$data = "";
+
+		foreach ($this->data as $item) {
+			$key = $item[0];
+			$value = $item[1];
+
+			$data .= '--' . $this->boundary . $eol . 'Content-Disposition: form-data; name="files"; filename="' . $key . '"'
+				. $eol . $eol . $value . $eol;
+		}
+
+		$data .= '--' . $this->boundary . '--' . $eol;
+		return $data;
+	}
+
+	private function generateBoundary(): string
+	{
+		return md5(uniqid(time()));
+	}
+}
+
 /**
  * Service to make requests to the GPTZero API
  */
@@ -119,35 +165,28 @@ class GPTZeroAPIService {
 	}
 
 	public function postPredictFiles(string $userId, array $fileIds) {
-		// TODO: Fix this
+		$multipart = new GPTZeroMultiFormDataBuilder();
 		$userFolder = $this->root->getUserFolder($userId);
-		$multipart = [];
 		foreach ($fileIds as $fileId) {
 			$nodes = $userFolder->getById($fileId);
 			if (count($nodes) === 1) {
 				/** @var \OCP\Files\File */
 				$file = $nodes[0];
-				$multipart[] = [
-					'name' => 'files',
-					'contents' => $file->fopen('r'),
-					'filename' => $file->getName(),
-					'headers' => [
-						'Content-Type' => $file->getMimeType(),
-						'Content-Disposition' => 'form-data; name="files"; filename="' . $file->getName() . '"'
-					],
-				];
+				$multipart->addData($file->getName(), $file->getContent());
 			}
 		}
 		$apiToken = $this->config->getAppValue(Application::APP_ID, 'api_token');
-		$headers = [
-			'User-Agent' => Application::INTEGRATION_USER_AGENT,
-			'X-Api-Key' => $apiToken,
-			'Content-Type' => 'multipart/form-data',
-			'Accept' => 'application/json',
-		];
 		try {
+			$reqquest = $multipart->build();
+			$headers = [
+				'Accept' => 'application/json',
+				'Content-Type' => $multipart->getContentType(),
+				'User-Agent' => Application::INTEGRATION_USER_AGENT,
+				'X-Api-Key' => $apiToken,
+			];
+			$this->logger->error('GPTZero API request : '.$reqquest, ['app' => Application::APP_ID]);
 			$response = $this->client->post(Application::GPTZero_API_BASE_URL . '/' . 'v2/predict/files', [
-				'multipart' => $multipart,
+				'body' => $reqquest,
 				'headers' => $headers,
 			]);
 			$body = $response->getBody();
@@ -162,7 +201,7 @@ class GPTZeroAPIService {
 			$this->logger->debug('GPTZero API error : '.$e->getMessage(), ['app' => Application::APP_ID]);
 			return ['error' => $e->getMessage()];
 		}
-		return $response;
+		return $response;  // this is unreachable
 	}
 
 	private function getCacheKey(string $text) {
