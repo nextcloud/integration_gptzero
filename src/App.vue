@@ -74,12 +74,8 @@
 					</NcButton>
 				</div>
 			</div>
-			<div v-if="'documents' in predictResult" class="documents">
-				<h2>
-					{{ t('integration_gptzero', 'Results') }}
-				</h2>
-				<div v-for="document in predictResult.documents"
-					:key="document.overall_burstiness">
+			<div v-if="predictResult" class="documents">
+				<div v-for="document in predictResult" :key="document.overall_burstiness">
 					<ScanResults :document="document" :selected-files="selectedFiles" />
 				</div>
 			</div>

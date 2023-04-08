@@ -158,10 +158,11 @@ class GPTZeroAPIService {
 		$response = $this->request($userId, 'v2/predict/text', [
 			'document' => $text,
 		], 'POST');
-		if (isset($response['documents'])) {
-			$this->cache->set($cacheKey, $response, self::GPTZero_RESPONSE_CACHE_TTL);
+		$corrected_documents = $this->postprocess_response($response);
+		if (count($corrected_documents) > 0) {
+			$this->cache->set($cacheKey, $corrected_documents, self::GPTZero_RESPONSE_CACHE_TTL);
 		}
-		return $response;
+		return $corrected_documents;
 	}
 
 	public function postPredictFiles(string $userId, array $fileIds) {
@@ -194,7 +195,8 @@ class GPTZeroAPIService {
 			if ($respCode >= 400) {
 				return ['error' => $this->l10n->t('Bad credentials')];
 			} else {
-				return json_decode($body, true);
+				$documents = json_decode($body, true);
+				return $this->postprocess_response($documents);
 			}
 		} catch (ClientException $e) {
 			$this->logger->debug('GPTZero API error : '.$e->getMessage(), ['app' => Application::APP_ID]);
@@ -272,5 +274,28 @@ class GPTZeroAPIService {
 			$this->logger->debug('GPTZero API error : '.$e->getMessage(), ['app' => Application::APP_ID]);
 			return ['error' => $e->getMessage()];
 		}
+	}
+
+	private function postprocess_response(array $response): array
+	{
+		if (!isset($response['documents']))
+			return [];
+		$documents = $response['documents'];
+		$processed = [];
+		foreach ($documents as $document) {
+			$processed[] = $this->postprocess_document($document);
+		}
+		return $processed;
+	}
+
+	private function postprocess_document(array $response): array
+	{
+		$processed = [];
+		$processed['average_generated_prob'] = number_format($response['average_generated_prob'] * 100, 2);
+		$processed['completely_generated_prob'] = number_format($response['completely_generated_prob'] * 100, 2);
+		$processed['overall_burstiness'] = number_format($response['overall_burstiness'], 2);
+		$processed['paragraphs'] = $response['paragraphs'];
+		$processed['sentences'] = $response['sentences'];
+		return $processed;
 	}
 }
