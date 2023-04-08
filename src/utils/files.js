@@ -2,31 +2,6 @@ import { generateRemoteUrl } from '@nextcloud/router'
 import { getCurrentUser } from '@nextcloud/auth'
 import axios from '@nextcloud/axios'
 
-/* <d:propfind  xmlns:d="DAV:" xmlns:oc="http://owncloud.org/ns" xmlns:nc="http://nextcloud.org/ns" xmlns:ocs="http://open-collaboration-services.org/ns">
-  <d:prop>
-  <d:getlastmodified />
-  <d:getetag />
-  <d:getcontenttype />
-  <d:resourcetype />
-  <oc:fileid />
-  <oc:permissions />
-  <oc:size />
-  <d:getcontentlength />
-  <d:quota-available-bytes />
-  <nc:has-preview />
-  <nc:mount-type />
-  <nc:is-encrypted />
-  <ocs:share-permissions />
-  <nc:share-attributes />
-  <oc:tags />
-  <oc:favorite />
-  <oc:owner-id />
-  <oc:owner-display-name />
-  <oc:share-types />
-  <oc:comments-unread />
-</d:prop>
-</d:propfind> */
-
 const davRequest = `<?xml version="1.0"?>
 	<d:propfind xmlns:d="DAV:" xmlns:oc="http://owncloud.org/ns"
 				xmlns:nc="http://nextcloud.org/ns"
@@ -34,7 +9,7 @@ const davRequest = `<?xml version="1.0"?>
 		<d:prop>
 			<oc:fileid />
 			<d:href />
-			<d:displayname/>
+			<d:displayname />
 			<d:getcontenttype />
 			<d:resourcetype />
 			<oc:permissions />

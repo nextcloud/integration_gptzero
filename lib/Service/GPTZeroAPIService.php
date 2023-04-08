@@ -177,7 +177,7 @@ class GPTZeroAPIService {
 		}
 		$apiToken = $this->config->getAppValue(Application::APP_ID, 'api_token');
 		try {
-			$reqquest = $multipart->build();
+			$request = $multipart->build();
 			$headers = [
 				'Accept' => 'application/json',
 				'Content-Type' => $multipart->getContentType(),
@@ -185,7 +185,7 @@ class GPTZeroAPIService {
 				'X-Api-Key' => $apiToken,
 			];
 			$response = $this->client->post(Application::GPTZero_API_BASE_URL . '/' . 'v2/predict/files', [
-				'body' => $reqquest,
+				'body' => $request,
 				'headers' => $headers,
 			]);
 			$body = $response->getBody();
@@ -200,7 +200,6 @@ class GPTZeroAPIService {
 			$this->logger->debug('GPTZero API error : '.$e->getMessage(), ['app' => Application::APP_ID]);
 			return ['error' => $e->getMessage()];
 		}
-		return $response;  // this is unreachable
 	}
 
 	private function getCacheKey(string $text) {

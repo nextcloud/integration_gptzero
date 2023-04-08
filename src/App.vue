@@ -2,6 +2,7 @@
 	<NcContent app-name="integration_gptzero">
 		<GPTZeroNav :predict-results-history.sync="predictResultsHistory"
 			:text="text"
+			:selected-files="selectedFiles"
 			@load-history-item="loadHistoryItem"
 			@delete-history-item="deleteHistoryItem"
 			@save-history-to-local-storage="saveHistoryToLocalStorage"
@@ -79,7 +80,7 @@
 				</h2>
 				<div v-for="document in predictResult.documents"
 					:key="document.overall_burstiness">
-					<ScanResults :document="document" />
+					<ScanResults :document="document" :selected-files="selectedFiles" />
 				</div>
 			</div>
 		</NcAppContent>
@@ -200,6 +201,11 @@ export default {
 						return
 					}
 					this.predictResult = res.data
+					// TODO: Add to history
+					this.addToHistory({
+						selectedFiles: this.selectedFiles,
+						predictResult: this.predictResult,
+					})
 					this.predicting = false
 				}).catch(err => {
 					console.error(err)
@@ -273,12 +279,26 @@ export default {
 			}
 		},
 		loadHistoryItem(historyPredictResult) {
-			this.text = historyPredictResult.text
-			this.predictResult = historyPredictResult.predictResult
+			if ('text' in historyPredictResult) {
+				this.text = historyPredictResult.text
+				this.predictResult = historyPredictResult.predictResult
+				this.selectedFiles = []
+			}
+			if ('selectedFiles' in historyPredictResult) {
+				this.text = ''
+				this.selectedFiles = [...historyPredictResult.selectedFiles]
+				this.predictResult = { ...historyPredictResult.predictResult }
+			}
 		},
 		deleteHistoryItem(historyItem) {
-			this.predictResultsHistory = this.predictResultsHistory.filter(item => item.text !== historyItem.text)
-			this.saveHistoryToLocalStorage()
+			if ('text' in historyItem) {
+				this.predictResultsHistory = this.predictResultsHistory.filter(item => item.text !== historyItem.text)
+				this.saveHistoryToLocalStorage()
+			}
+			if ('selectedFiles' in historyItem) {
+				this.predictResultsHistory = this.predictResultsHistory.filter(item => item.selectedFiles !== historyItem.selectedFiles)
+				this.saveHistoryToLocalStorage()
+			}
 		},
 		saveHistoryToLocalStorage() {
 			localStorage.setItem('gptzero-predict-results-history', JSON.stringify(this.predictResultsHistory))
@@ -289,12 +309,32 @@ export default {
 			this.saveHistoryToLocalStorage()
 		},
 		addToHistory(item) {
-			if (this.predictResultsHistory.filter(historyItem => historyItem.text === item.text).length === 0) {
-				if (this.predictResultsHistory.length >= 7) {
-					this.predictResultsHistory.pop()
+			if ('text' in item) {
+				if (this.predictResultsHistory.filter(historyItem => historyItem.text === item.text).length === 0) {
+					if (this.predictResultsHistory.length >= 7) {
+						this.predictResultsHistory.pop()
+					}
+					this.predictResultsHistory.push(item)
+					this.saveHistoryToLocalStorage()
 				}
-				this.predictResultsHistory.push(item)
-				this.saveHistoryToLocalStorage()
+			}
+			if ('selectedFiles' in item) {
+				const filesHistoryItems = this.predictResultsHistory.filter(historyItem => 'selectedFiles' in historyItem && historyItem.selectedFiles.length === item.selectedFiles.length)
+				if (filesHistoryItems.filter(historyItem => historyItem.selectedFiles.map(f => f.fileid) === item.selectedFiles.map(f => f.fileid)).length === 0) {
+					if (this.predictResultsHistory.length >= 7) {
+						this.predictResultsHistory.pop()
+					}
+					this.predictResultsHistory.push(item)
+					this.saveHistoryToLocalStorage()
+				} else { // TODO: Fix this
+					// Update existing history item
+					const historyItemIndex = this.predictResultsHistory.findIndex(historyItem => 'selectedFiles' in historyItem && historyItem.selectedFiles.map(f => f.fileid) === item.selectedFiles.map(f => f.fileid))[0]
+					const historyItem = this.predictResultsHistory[historyItemIndex]
+					console.debug(historyItem)
+					historyItem.predictResult = item.predictResult
+					this.predictResultsHistory[historyItemIndex] = historyItem
+					this.saveHistoryToLocalStorage()
+				}
 			}
 		},
 		fillWithTestText() {
@@ -350,6 +390,24 @@ Many countries have committed to reducing their carbon footprint through initiat
 		justify-content: center;
 	}
 
+	@media (max-width: 568px) {
+		textarea {
+			width: 100%;
+		}
+		.actions {
+			width: 100%;
+			flex-direction: column;
+
+			button {
+				margin: 5px 0 !important;
+			}
+		}
+
+		.documents {
+			width: 85%;
+		}
+	}
+
 	h2 {
 		display: flex;
 		justify-content: center;
@@ -371,13 +429,11 @@ Many countries have committed to reducing their carbon footprint through initiat
 }
 
 .documents {
-	width: 70%;
-	// height: 100%;
-	// overflow: auto;
+	width: 75%;
 	margin: 20px auto;
-	border: 1px solid var(--color-border-dark);
-	border-radius: var(--border-radius);
-	padding: 10px;
+	// border: 1px solid var(--color-border-dark);
+	// border-radius: var(--border-radius);
+	// padding: 10px;
 
 	h2 {
 		text-align: center;

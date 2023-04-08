@@ -34,10 +34,25 @@ use OCP\IRequest;
 use OCP\Util;
 
 use OCA\GPTZero\AppInfo\Application;
+use OCP\AppFramework\Services\IInitialState;
+use OCP\IConfig;
 
 class PageController extends Controller {
-	public function __construct(IRequest $request) {
+	/** @var IConfig */
+	private $config;
+
+	/** @var IInitialState */
+	private $initialStateService;
+
+	public function __construct(
+		IRequest $request,
+		IInitialState $initialStateService,
+		IConfig $config
+	) {
 		parent::__construct(Application::APP_ID, $request);
+
+		$this->config = $config;
+		$this->initialStateService = $initialStateService;
 	}
 
 	/**
@@ -50,6 +65,13 @@ class PageController extends Controller {
 	public function index(): TemplateResponse {
 		Util::addScript(Application::APP_ID, Application::APP_ID . '-main');
 
+		$completelyGeneratedProbMin = $this->config->getAppValue(Application::APP_ID, 'completely_generated_prob_min', 0.22);
+		$completelyGeneratedProbMax = $this->config->getAppValue(Application::APP_ID, 'completely_generated_prob_max', 0.5);
+
+		$this->initialStateService->provideInitialState(Application::APP_ID, 'completely_generated_prob_config', [
+			'min' => $completelyGeneratedProbMin,
+			'max' => $completelyGeneratedProbMax
+		]);
 		return new TemplateResponse(Application::APP_ID, 'main');
 	}
 }

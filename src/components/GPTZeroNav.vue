@@ -1,7 +1,7 @@
 <template>
 	<NcAppNavigation>
 		<NcAppNavigationCaption
-			:title="t('integration_gptzero', 'GPTZero History')">
+			:title="historyTitle">
 			<template #actions>
 				<NcActionButton @click="saveHistoryToLocalStorage">
 					<template #icon>
@@ -19,10 +19,10 @@
 		</NcAppNavigationCaption>
 		<template v-if="predictResultsHistory.length > 0" #list>
 			<NcAppNavigationItem v-for="historyItem in predictResultsHistory"
-				:key="historyItem.text"
-				:exact="historyItem.text === text"
-				:title="historyItem.text.substring(0, 50)"
-				@click="loadHistoryItem(historyItem)">
+				:key="historyItemKey(historyItem)"
+				:exact="exactHistoryItem(historyItem)"
+				:title="historyItemTitle(historyItem)"
+				@click.prevent="loadHistoryItem(historyItem)">
 				<template #actions>
 					<NcActionButton @click="deleteHistoryItem(historyItem)">
 						<template #icon>
@@ -92,12 +92,19 @@ export default {
 			type: String,
 			default: '',
 		},
+		selectedFiles: {
+			type: Array,
+			default: () => [],
+		},
 	},
 	data() {
 		return {
 		}
 	},
 	computed: {
+		historyTitle() {
+			return t('integration_gptzero', 'GPTZero History {count}/7', { count: this.predictResultsHistory.length })
+		},
 	},
 	methods: {
 		loadHistoryItem(historyPredictResult) {
@@ -111,6 +118,30 @@ export default {
 		},
 		clearHistory() {
 			this.$emit('clear-history')
+		},
+		historyItemKey(historyItem) {
+			if ('text' in historyItem) {
+				return historyItem.text
+			}
+			if ('selectedFiles' in historyItem) {
+				return historyItem.selectedFiles.join(',')
+			}
+		},
+		exactHistoryItem(historyItem) {
+			if ('text' in historyItem) {
+				return historyItem.text === this.text
+			}
+			if ('selectedFiles' in historyItem) {
+				return this.selectedFiles.map(f => f.fileid).join(', ') === historyItem.selectedFiles.map(f => f.fileid).join(',')
+			}
+		},
+		historyItemTitle(historyItem) {
+			if ('text' in historyItem) {
+				return historyItem.text.substring(0, 50)
+			}
+			if ('selectedFiles' in historyItem) {
+				return 'Files (' + historyItem.selectedFiles.length + '): ' + historyItem.selectedFiles.map(f => f.name).join(', ').substring(0, 50)
+			}
 		},
 	},
 }
