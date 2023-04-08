@@ -184,7 +184,6 @@ class GPTZeroAPIService {
 				'User-Agent' => Application::INTEGRATION_USER_AGENT,
 				'X-Api-Key' => $apiToken,
 			];
-			$this->logger->error('GPTZero API request : '.$reqquest, ['app' => Application::APP_ID]);
 			$response = $this->client->post(Application::GPTZero_API_BASE_URL . '/' . 'v2/predict/files', [
 				'body' => $reqquest,
 				'headers' => $headers,
