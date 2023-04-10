@@ -404,6 +404,10 @@ export default {
 	&-heading {
 		margin: 0 0 20px;
 
+		.description {
+			text-align: center;
+		}
+
 		.pre-caution {
 			display: flex;
 			align-items: center;
