@@ -222,6 +222,7 @@ export default {
 									})
 									this.text = ''
 									this.predictResult = {}
+									this.clearFileScanFromPath()
 								}
 							})
 					})
@@ -229,6 +230,7 @@ export default {
 		},
 		removeFile(file) {
 			this.selectedFiles = this.selectedFiles.filter(f => f.fileid !== file.fileid)
+			this.clearFileScanFromPath()
 		},
 		getFilesPicker(title) {
 			return getFilePickerBuilder(title)
@@ -250,6 +252,9 @@ export default {
 						})
 					})
 			}
+		},
+		clearFileScanFromPath() {
+			window.history.replaceState({}, document.title, window.location.pathname)
 		},
 		loadTermsOfServiceAccept() {
 			const accept = localStorage.getItem('gptzero-accept-terms-of-service')
@@ -341,6 +346,7 @@ export default {
 			this.text = ''
 			this.predictResult = {}
 			this.selectedFiles = []
+			this.clearFileScanFromPath()
 		},
 	},
 }
