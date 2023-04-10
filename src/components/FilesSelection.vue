@@ -1,8 +1,5 @@
 <template>
 	<div class="files-selection">
-		<div class="files-selection__title">
-			{{ t('integration_gptzero', 'Files selection') }}
-		</div>
 		<div class="files-selection__files">
 			<ul>
 				<NcListItem v-for="file in files"
@@ -78,11 +75,6 @@ export default {
 	max-width: 700px;
 	margin: 10px auto;
 
-	&__title {
-		font-weight: bold;
-		font-size: 1.2em;
-		margin-bottom: 0.5em;
-	}
 	&__files {
 		border: 1px solid var(--color-border-dark);
 		border-radius: var(--border-radius);

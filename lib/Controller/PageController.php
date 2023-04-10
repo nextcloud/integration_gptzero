@@ -68,7 +68,7 @@ class PageController extends Controller {
 		$completelyGeneratedProbMin = $this->config->getAppValue(Application::APP_ID, 'completely_generated_prob_min', 0.22);
 		$completelyGeneratedProbMax = $this->config->getAppValue(Application::APP_ID, 'completely_generated_prob_max', 0.5);
 
-		$this->initialStateService->provideInitialState(Application::APP_ID, 'completely_generated_prob_config', [
+		$this->initialStateService->provideInitialState('completely_generated_prob_config', [
 			'min' => $completelyGeneratedProbMin,
 			'max' => $completelyGeneratedProbMax
 		]);

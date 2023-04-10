@@ -19,7 +19,7 @@
 					</p>
 					<p class="pre-caution">
 						<InformationOutlineIcon :size="20" class="icon" style="margin-right: 5px;" />
-						{{ t('integration_gptzero', 'All the text you are typing is sent to the GPTZero API service. Please do not use any sensitive data.') }}
+						{{ t('integration_gptzero', 'All the text you are typing or files you select will be sent to the GPTZero API service. Please do not use any sensitive data.') }}
 					</p>
 				</div>
 				<textarea v-if="selectedFiles.length === 0"
@@ -35,7 +35,7 @@
 						style="margin-right: 10px;">
 						{{ t('integration_gptzero', 'I agree to the terms of service') }}
 					</NcCheckboxRadioSwitch>
-					<NcButton href="https://gptzero.me/terms-of-use.html" type="tertiary">
+					<NcButton href="https://gptzero.me/terms-of-use.html" target="_blank" type="tertiary">
 						<template #icon>
 							<OpenInNew :size="18" />
 						</template>
@@ -57,26 +57,22 @@
 						<template #icon>
 							<FileMultiple :size="20" />
 						</template>
-						{{ t('integration_gptzero', 'Select files') }}
-					</NcButton>
-					<NcButton v-if="selectedFiles.length === 0"
-						style="margin: 0 10px;"
-						@click="fillWithTestText">
-						{{ t('integration_gptzero', 'Fill with test text') }}
-					</NcButton>
-					<NcButton v-if="selectedFiles.length === 0"
-						style="margin: 0 10px;"
-						@click="fillTestResults">
-						{{ t('integration_gptzero', 'Fill test results') }}
+						{{ selectFilesButtonText }}
 					</NcButton>
 					<NcButton @click="clearInputs">
+						<template #icon>
+							<span class="material-icon icon-close" />
+						</template>
 						{{ t('integration_gptzero', 'Clear') }}
 					</NcButton>
 				</div>
 			</div>
 			<div v-if="predictResult" class="documents">
-				<div v-for="document in predictResult" :key="document.overall_burstiness">
-					<ScanResults :document="document" :selected-files="selectedFiles" />
+				<div v-for="document, index in predictResult" :key="index">
+					<ScanResults
+						:document="document"
+						:document-index="Number(index)"
+						:selected-files="selectedFiles" />
 				</div>
 			</div>
 		</NcAppContent>
@@ -126,13 +122,19 @@ export default {
 			predicting: false,
 			predictResultsHistory: [],
 			selectedFiles: [],
-			error: '',
 			acceptGPTZeroTermsOfService: false,
 		}
 	},
 	computed: {
 		predictResultText() {
 			return JSON.stringify(this.predictResult, null, 2)
+		},
+		selectFilesButtonText() {
+			if (this.selectedFiles.length === 0) {
+				return t('integration_gptzero', 'Select files')
+			} else {
+				return t('integration_gptzero', 'Add files')
+			}
 		},
 	},
 	watch: {
@@ -164,10 +166,10 @@ export default {
 				axios.post(generateUrl('/apps/integration_gptzero/predict/text'), {
 					text: this.text.trim().replace(/(?:\r\n|\r|\n)/g, '\n'),
 				}).then(res => {
-					console.debug(res)
 					this.predictResult = res.data
 					this.predicting = false
 					this.addToHistory({
+						textHash: this.getTextHash(this.text),
 						text: this.text,
 						predictResult: this.predictResult,
 					})
@@ -175,12 +177,9 @@ export default {
 					console.error(err)
 					this.predicting = false
 					showError(t('integration_gptzero', 'Error while scanning text'))
-					if ('error' in err.data) {
-						this.error = err.data.error
-					}
 				})
 			} else {
-				showError(t('integration_gptzero', 'Please enter at least 250 characters'))
+				showError(t('integration_gptzero', 'Please enter at least 250 characters or select files to scan'))
 			}
 		},
 		postPredictFiles() {
@@ -190,26 +189,22 @@ export default {
 				axios.post(generateUrl('/apps/integration_gptzero/predict/files'), {
 					fileIds: this.selectedFiles.map(f => f.fileid),
 				}).then(res => {
-					console.debug(res)
 					if (res.data.error) {
 						showError(res.data.error)
 						this.predicting = false
 						return
 					}
 					this.predictResult = res.data
-					// TODO: Add to history
 					this.addToHistory({
-						selectedFiles: this.selectedFiles,
-						predictResult: this.predictResult,
+						fileIds: this.selectedFiles.map(f => f.fileid).join(','),
+						selectedFiles: [...this.selectedFiles],
+						predictResult: { ...this.predictResult },
 					})
 					this.predicting = false
 				}).catch(err => {
 					console.error(err)
 					this.predicting = false
 					showError(t('integration_gptzero', 'Error while scanning files'))
-					if ('error' in err.data) {
-						this.error = err.data.error
-					}
 				})
 			} else {
 				showError(t('integration_gptzero', 'Please select at least one file'))
@@ -218,16 +213,15 @@ export default {
 		selectFiles() {
 			this.getFilesPicker(t('integration_notion', 'Select files for scan')).pick()
 				.then((files) => {
-					console.debug(files)
 					files.forEach((file) => {
-						console.debug(file)
 						requestFileInfo(file)
 							.then((fileInfo) => {
-								console.debug(parseFileInfoToObject(fileInfo.data))
 								if (this.selectedFiles.findIndex(f => f.path === file) === -1) {
 									this.selectedFiles.push({
 										path: file, ...parseFileInfoToObject(fileInfo.data),
 									})
+									this.text = ''
+									this.predictResult = {}
 								}
 							})
 					})
@@ -246,13 +240,11 @@ export default {
 				.build()
 		},
 		loadFileScanFromPath() {
-			// TODO: Request file info from fileid in path
 			let filePath = window.location.href.split('?filePath=')[1]
 			if (filePath) {
 				filePath = decodeURIComponent(filePath)
 				requestFileInfo(filePath)
 					.then((fileInfo) => {
-						console.debug(parseFileInfoToObject(fileInfo.data))
 						this.selectedFiles.push({
 							path: filePath, ...parseFileInfoToObject(fileInfo.data),
 						})
@@ -288,11 +280,11 @@ export default {
 		},
 		deleteHistoryItem(historyItem) {
 			if ('text' in historyItem) {
-				this.predictResultsHistory = this.predictResultsHistory.filter(item => item.text !== historyItem.text)
+				this.predictResultsHistory = this.predictResultsHistory.filter(item => item.textHash !== historyItem.textHash)
 				this.saveHistoryToLocalStorage()
 			}
 			if ('selectedFiles' in historyItem) {
-				this.predictResultsHistory = this.predictResultsHistory.filter(item => item.selectedFiles !== historyItem.selectedFiles)
+				this.predictResultsHistory = this.predictResultsHistory.filter(item => item.fileIds !== historyItem.fileIds)
 				this.saveHistoryToLocalStorage()
 			}
 		},
@@ -306,48 +298,44 @@ export default {
 		},
 		addToHistory(item) {
 			if ('text' in item) {
-				if (this.predictResultsHistory.filter(historyItem => historyItem.text === item.text).length === 0) {
+				if (this.predictResultsHistory.filter(historyItem => historyItem.textHash === item.textHash).length === 0) {
 					if (this.predictResultsHistory.length >= 7) {
-						this.predictResultsHistory.pop()
+						this.predictResultsHistory.shift()
 					}
+					this.predictResultsHistory.push(item)
+					this.saveHistoryToLocalStorage()
+				} else {
+					const historyItemIndex = this.predictResultsHistory.findIndex(historyItem => historyItem.textHash === item.textHash)
+					this.predictResultsHistory.splice(historyItemIndex, 1)
 					this.predictResultsHistory.push(item)
 					this.saveHistoryToLocalStorage()
 				}
 			}
 			if ('selectedFiles' in item) {
-				const filesHistoryItems = this.predictResultsHistory.filter(historyItem => 'selectedFiles' in historyItem && historyItem.selectedFiles.length === item.selectedFiles.length)
-				if (filesHistoryItems.filter(historyItem => historyItem.selectedFiles.map(f => f.fileid) === item.selectedFiles.map(f => f.fileid)).length === 0) {
+				if (this.predictResultsHistory.filter(historyItem => 'selectedFiles' in historyItem).filter(historyItem => historyItem.fileIds === item.fileIds).length === 0) {
 					if (this.predictResultsHistory.length >= 7) {
-						this.predictResultsHistory.pop()
+						this.predictResultsHistory.shift()
 					}
 					this.predictResultsHistory.push(item)
 					this.saveHistoryToLocalStorage()
-				} else { // TODO: Fix this
-					// Update existing history item
-					const historyItemIndex = this.predictResultsHistory.findIndex(historyItem => 'selectedFiles' in historyItem && historyItem.selectedFiles.map(f => f.fileid) === item.selectedFiles.map(f => f.fileid))[0]
-					const historyItem = this.predictResultsHistory[historyItemIndex]
-					console.debug(historyItem)
-					historyItem.predictResult = item.predictResult
-					this.predictResultsHistory[historyItemIndex] = historyItem
+				} else {
+					const historyItemIndex = this.predictResultsHistory.findIndex(historyItem => 'selectedFiles' in historyItem && historyItem.fileIds === item.fileIds)
+					this.predictResultsHistory.splice(historyItemIndex, 1)
+					this.predictResultsHistory.push(item)
 					this.saveHistoryToLocalStorage()
 				}
 			}
 		},
-		fillWithTestText() {
-			this.text = `Climate change refers to the long-term shift in global weather patterns caused by human activity, particularly the emission of greenhouse gases into the atmosphere.
-The most significant greenhouse gas is carbon dioxide, which is primarily produced by burning fossil fuels such as coal, oil, and gas.
-The consequences of climate change are already visible in the form of rising temperatures, melting glaciers and ice caps, and more frequent extreme weather events such as hurricanes, droughts, and floods.
-Scientists said many of the species relied on snow cover remaining high on hills until late spring and even summer to ensure a moist environment.
-They also said plants that thrived on lower ground in warmer conditions were spreading to mountain habitats.
-Species found to be in decline include snow pearlwort, alpine lady-fern and alpine speedwell.
-These changes have significant impacts on ecosystems, biodiversity, and human health, including increased risk of respiratory diseases, food and water shortages, and the spread of infectious diseases.
-To address climate change, it is essential to reduce greenhouse gas emissions through a range of measures, including increased use of renewable energy sources, greater energy efficiency, and improved transportation systems.
-Many countries have committed to reducing their carbon footprint through initiatives such as the Paris Agreement, which aims to limit global warming to below 2°C above pre-industrial levels.
-`
-		},
-		fillTestResults() {
-			// eslint-disable-next-line
-			this.predictResult = {"documents":[{"average_generated_prob":0.6666666666666666,"completely_generated_prob":0.24473019769941715,"overall_burstiness":60.12232971191406,"paragraphs":[{"completely_generated_prob":0.8181818181818181,"num_sentences":1,"start_sentence_index":0},{"completely_generated_prob":0.8181818181818181,"num_sentences":1,"start_sentence_index":1},{"completely_generated_prob":0.8181818181818181,"num_sentences":1,"start_sentence_index":2},{"completely_generated_prob":0.11111111111111108,"num_sentences":1,"start_sentence_index":3},{"completely_generated_prob":0.11111111111111108,"num_sentences":1,"start_sentence_index":4},{"completely_generated_prob":0.11111111111111108,"num_sentences":1,"start_sentence_index":5},{"completely_generated_prob":0.8181818181818181,"num_sentences":1,"start_sentence_index":6},{"completely_generated_prob":0.8181818181818181,"num_sentences":1,"start_sentence_index":7},{"completely_generated_prob":0.8181818181818181,"num_sentences":1,"start_sentence_index":8}],"sentences":[{"generated_prob":1,"perplexity":9,"sentence":"Climate change refers to the long-term shift in global weather patterns caused by human activity, particularly the emission of greenhouse gases into the atmosphere."},{"generated_prob":1,"perplexity":6,"sentence":"The most significant greenhouse gas is carbon dioxide, which is primarily produced by burning fossil fuels such as coal, oil, and gas."},{"generated_prob":1,"perplexity":7,"sentence":"The consequences of climate change are already visible in the form of rising temperatures, melting glaciers and ice caps, and more frequent extreme weather events such as hurricanes, droughts, and floods."},{"generated_prob":0,"perplexity":71,"sentence":"Scientists said many of the species relied on snow cover remaining high on hills until late spring and even summer to ensure a moist environment."},{"generated_prob":0,"perplexity":112,"sentence":"They also said plants that thrived on lower ground in warmer conditions were spreading to mountain habitats."},{"generated_prob":0,"perplexity":169,"sentence":"Species found to be in decline include snow pearlwort, alpine lady-fern and alpine speedwell."},{"generated_prob":1,"perplexity":10,"sentence":"These changes have significant impacts on ecosystems, biodiversity, and human health, including increased risk of respiratory diseases, food and water shortages, and the spread of infectious diseases."},{"generated_prob":1,"perplexity":9,"sentence":"To address climate change, it is essential to reduce greenhouse gas emissions through a range of measures, including increased use of renewable energy sources, greater energy efficiency, and improved transportation systems."},{"generated_prob":1,"perplexity":5,"sentence":"Many countries have committed to reducing their carbon footprint through initiatives such as the Paris Agreement, which aims to limit global warming to below 2°C above pre-industrial levels."}]}]}
+		getTextHash(text) {
+			let hash = 0
+			let i, chr
+			if (text.length === 0) return hash
+			for (i = 0; i < text.length; i++) {
+				chr = text.charCodeAt(i)
+				hash = ((hash << 5) - hash) + chr
+				hash |= 0
+			}
+			return hash
 		},
 		clearInputs() {
 			this.text = ''

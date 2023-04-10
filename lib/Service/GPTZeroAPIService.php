@@ -44,30 +44,24 @@ use OCP\ICacheFactory;
 use OCP\ICache;
 
 
-class GPTZeroMultiFormDataBuilder
-{
-
+class GPTZeroMultiFormDataBuilder {
 	private array $data = [];
 	private string $boundary;
 
-	public function __construct()
-	{
+	public function __construct() {
 		$this->boundary = $this->generateBoundary();
 	}
 
-	public function addData(string $name, string $value): self
-	{
+	public function addData(string $name, string $value): self {
 		$this->data[] = [$name, $value];
 		return $this;
 	}
 
-	public function getContentType(): string
-	{
+	public function getContentType(): string {
 		return 'multipart/form-data; boundary=' . $this->boundary;
 	}
 
-	public function build(): string
-	{
+	public function build(): string {
 		$eol = "\r\n";
 		$data = "";
 
@@ -83,8 +77,7 @@ class GPTZeroMultiFormDataBuilder
 		return $data;
 	}
 
-	private function generateBoundary(): string
-	{
+	private function generateBoundary(): string {
 		return md5(uniqid(time()));
 	}
 }
@@ -276,8 +269,7 @@ class GPTZeroAPIService {
 		}
 	}
 
-	private function postprocess_response(array $response): array
-	{
+	private function postprocess_response(array $response): array {
 		if (!isset($response['documents']))
 			return [];
 		$documents = $response['documents'];
@@ -288,8 +280,7 @@ class GPTZeroAPIService {
 		return $processed;
 	}
 
-	private function postprocess_document(array $response): array
-	{
+	private function postprocess_document(array $response): array {
 		$processed = [];
 		$processed['average_generated_prob'] = number_format($response['average_generated_prob'] * 100, 2);
 		$processed['completely_generated_prob'] = number_format($response['completely_generated_prob'] * 100, 2);

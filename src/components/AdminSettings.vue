@@ -118,8 +118,8 @@ export default {
 				this.saveOptions({
 					api_token: this.state.api_token,
 					file_actions_menu: this.state.file_actions_menu,
-					completely_generated_prob_min: this.state.completely_generated_prob_min,
-					completely_generated_prob_max: this.state.completely_generated_prob_max,
+					completely_generated_prob_min: Number(this.state.completely_generated_prob_min),
+					completely_generated_prob_max: Number(this.state.completely_generated_prob_max),
 				})
 			}, 2000)()
 		},

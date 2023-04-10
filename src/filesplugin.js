@@ -49,8 +49,6 @@ OCA.Files.fileActions.registerAction({
 	permissions: OC.PERMISSION_READ,
 	icon: imagePath('integration_gptzero', 'app-dark.svg'),
 	actionHandler: (name, context) => {
-		// TODO: Implement text scanning
-		console.debug(name, context)
 		navigateToAppPage(name, context)
 	},
 })
@@ -62,8 +60,6 @@ OCA.Files.fileActions.registerAction({
 	permissions: OC.PERMISSION_READ,
 	icon: imagePath('integration_gptzero', 'app-dark.svg'),
 	actionHandler: (name, context) => {
-		// TODO: Implement text scanning
-		console.debug(name, context)
 		navigateToAppPage(name, context)
 	},
 })
@@ -75,8 +71,6 @@ OCA.Files.fileActions.registerAction({
 	permissions: OC.PERMISSION_READ,
 	icon: imagePath('integration_gptzero', 'app-dark.svg'),
 	actionHandler: (name, context) => {
-		// TODO: Implement text scanning
-		console.debug(name, context)
 		navigateToAppPage(name, context)
 	},
 })

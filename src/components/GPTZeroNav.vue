@@ -21,7 +21,7 @@
 			<NcAppNavigationItem v-for="historyItem in predictResultsHistory"
 				:key="historyItemKey(historyItem)"
 				:exact="exactHistoryItem(historyItem)"
-				:title="historyItemTitle(historyItem)"
+				:name="historyItemTitle(historyItem)"
 				@click.prevent="loadHistoryItem(historyItem)">
 				<template #actions>
 					<NcActionButton @click="deleteHistoryItem(historyItem)">
@@ -46,7 +46,8 @@
 		<template #footer>
 			<ul class="app-navigation-entry__settings">
 				<NcAppNavigationItem :title="t('integration_gptzero', 'GPTZero website')"
-					href="https://gptzero.me/">
+					href="https://gptzero.me/"
+					target="_blank">
 					<template #icon>
 						<OpenInNew :size="20" />
 					</template>
@@ -121,10 +122,10 @@ export default {
 		},
 		historyItemKey(historyItem) {
 			if ('text' in historyItem) {
-				return historyItem.text
+				return historyItem.textHash
 			}
 			if ('selectedFiles' in historyItem) {
-				return historyItem.selectedFiles.join(',')
+				return historyItem.fileIds
 			}
 		},
 		exactHistoryItem(historyItem) {
@@ -132,7 +133,7 @@ export default {
 				return historyItem.text === this.text
 			}
 			if ('selectedFiles' in historyItem) {
-				return this.selectedFiles.map(f => f.fileid).join(', ') === historyItem.selectedFiles.map(f => f.fileid).join(',')
+				return this.selectedFiles.map(f => f.fileid).join(',') === historyItem.fileIds
 			}
 		},
 		historyItemTitle(historyItem) {
