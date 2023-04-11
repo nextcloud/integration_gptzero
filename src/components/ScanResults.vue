@@ -1,16 +1,21 @@
 <template>
 	<div class="scan-results">
-		<h2 :title="documentFilePath">
-			{{ documentName }}
-			<NcButton v-if="selectedFiles.length > 0"
-				:href="pathToFilesApp"
-				target="_blank"
-				type="tertiary">
-				<template #icon>
-					<OpenInNew :size="18" />
-				</template>
-			</NcButton>
-		</h2>
+		<div class="scan-results__heading">
+			<h2 :title="documentFilePath">
+				{{ documentName }}
+				<NcButton v-if="selectedFiles.length > 0"
+					:href="pathToFilesApp"
+					target="_blank"
+					type="tertiary">
+					<template #icon>
+						<OpenInNew :size="18" />
+					</template>
+				</NcButton>
+			</h2>
+			<div class="scan-results__heading_result">
+				{{ completelyGeneratedProbText() }}
+			</div>
+		</div>
 		<div class="overall-results">
 			<p>
 				{{ t('integration_gptzero', 'Average generated probability:') }}
@@ -23,7 +28,6 @@
 			<p>
 				{{ t('integration_gptzero', 'Completely generated probability:') }}
 				{{ completely_generated_prob }}
-				({{ completelyGeneratedProbText() }})
 				<NcProgressBar :value="Number(document.completely_generated_prob)" :size="'small'" :max="100" />
 			</p>
 			<p style="font-size: 0.85em">
@@ -145,12 +149,25 @@ export default {
 	border: 1px solid var(--color-border-dark);
 	border-radius: var(--border-radius);
 
-	h2 {
+	&__heading {
 		display: flex;
+		justify-content: space-between;
 		align-items: center;
+		margin-bottom: 10px;
 
-		a {
-			margin-left: 10px;
+		h2 {
+			display: flex;
+			align-items: center;
+			margin: 0;
+			font-weight: normal;
+
+			a {
+				margin-left: 10px;
+			}
+		}
+
+		&_result {
+			font-weight: bold;
 		}
 	}
 
