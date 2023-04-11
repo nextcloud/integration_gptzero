@@ -65,8 +65,8 @@ class PageController extends Controller {
 	public function index(): TemplateResponse {
 		Util::addScript(Application::APP_ID, Application::APP_ID . '-main');
 
-		$completelyGeneratedProbMin = $this->config->getAppValue(Application::APP_ID, 'completely_generated_prob_min', 0.22);
-		$completelyGeneratedProbMax = $this->config->getAppValue(Application::APP_ID, 'completely_generated_prob_max', 0.5);
+		$completelyGeneratedProbMin = $this->config->getAppValue(Application::APP_ID, 'completely_generated_prob_min', 10.0);
+		$completelyGeneratedProbMax = $this->config->getAppValue(Application::APP_ID, 'completely_generated_prob_max', 47.0);
 
 		$this->initialStateService->provideInitialState('completely_generated_prob_config', [
 			'min' => $completelyGeneratedProbMin,

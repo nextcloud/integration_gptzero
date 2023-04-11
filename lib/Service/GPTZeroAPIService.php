@@ -283,7 +283,7 @@ class GPTZeroAPIService {
 	private function postprocess_document(array $response): array {
 		$processed = [];
 		$processed['average_generated_prob'] = number_format($response['average_generated_prob'] * 100, 2);
-		$processed['completely_generated_prob'] = number_format($response['completely_generated_prob'] * 100, 2);
+		$processed['completely_generated_prob'] = number_format($response['completely_generated_prob'] * 100, 3);
 		$processed['overall_burstiness'] = number_format($response['overall_burstiness'], 2);
 		$processed['paragraphs'] = $response['paragraphs'];
 		$processed['sentences'] = $response['sentences'];
