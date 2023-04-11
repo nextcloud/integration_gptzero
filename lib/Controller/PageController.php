@@ -69,8 +69,8 @@ class PageController extends Controller {
 		$completelyGeneratedProbMax = $this->config->getAppValue(Application::APP_ID, 'completely_generated_prob_max', 47.0);
 
 		$this->initialStateService->provideInitialState('completely_generated_prob_config', [
-			'min' => $completelyGeneratedProbMin,
-			'max' => $completelyGeneratedProbMax
+			'min' => floatval($completelyGeneratedProbMin),
+			'max' => floatval($completelyGeneratedProbMax),
 		]);
 		return new TemplateResponse(Application::APP_ID, 'main');
 	}
