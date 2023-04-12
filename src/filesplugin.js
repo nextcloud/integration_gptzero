@@ -22,10 +22,7 @@
  *
  */
 
-// eslint-disable-next-line
-import axios from '@nextcloud/axios'
-// eslint-disable-next-line
-import { generateUrl, imagePath } from '@nextcloud/router'
+import { generateUrl } from '@nextcloud/router'
 
 function generateGPTZeroAppUrl(filePath) {
 	return generateUrl('/apps/integration_gptzero?filePath={path}', { path: filePath })
@@ -42,35 +39,24 @@ function navigateToAppPage(name, context) {
 	window.location.href = generateGPTZeroAppUrl(filePath)
 }
 
-OCA.Files.fileActions.registerAction({
-	name: 'gptzeroScan',
-	displayName: t('integration_gptzero', 'Scan for AI'),
-	mime: 'application/pdf',
-	permissions: OC.PERMISSION_READ,
-	icon: imagePath('integration_gptzero', 'app-dark.svg'),
-	actionHandler: (name, context) => {
-		navigateToAppPage(name, context)
-	},
-})
+const supportedMimeTypes = {
+	pdf: 'application/pdf',
+	txt: 'text/plain',
+	md: 'text/markdown',
+	msword: 'application/msword',
+}
 
-OCA.Files.fileActions.registerAction({
-	name: 'gptzeroScan',
-	displayName: t('integration_gptzero', 'Scan for AI'),
-	mime: 'text/plain',
-	permissions: OC.PERMISSION_READ,
-	icon: imagePath('integration_gptzero', 'app-dark.svg'),
-	actionHandler: (name, context) => {
-		navigateToAppPage(name, context)
-	},
-})
-
-OCA.Files.fileActions.registerAction({
-	name: 'gptzeroScan',
-	displayName: t('integration_gptzero', 'Scan for AI'),
-	mime: 'application/msword',
-	permissions: OC.PERMISSION_READ,
-	icon: imagePath('integration_gptzero', 'app-dark.svg'),
-	actionHandler: (name, context) => {
-		navigateToAppPage(name, context)
-	},
+Object.keys(supportedMimeTypes).forEach(name => {
+	OCA.Files.fileActions.registerAction({
+		name: 'gptzeroScan-' + name,
+		displayName: t('integration_gptzero', 'Scan with GPTZero'),
+		mime: supportedMimeTypes[name],
+		order: 90,
+		permissions: OC.PERMISSION_READ,
+		// files_rightclick only works if iconClass is set
+		iconClass: 'icon-gptzero-file',
+		actionHandler: (name, context) => {
+			navigateToAppPage(name, context)
+		},
+	})
 })
