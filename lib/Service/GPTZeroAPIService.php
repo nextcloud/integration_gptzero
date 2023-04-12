@@ -42,6 +42,7 @@ use OCP\Share\IManager as ShareManager;
 use OCA\GPTZero\AppInfo\Application;
 use OCP\ICacheFactory;
 use OCP\ICache;
+use Throwable;
 
 
 class GPTZeroMultiFormDataBuilder {
@@ -148,10 +149,10 @@ class GPTZeroAPIService {
 		if ($cached) {
 			return $cached;
 		}
-		$response = $this->request($userId, 'v2/predict/text', [
+		$response = $this->request('v2/predict/text', [
 			'document' => $text,
 		], 'POST');
-		$corrected_documents = $this->postprocess_response($response);
+		$corrected_documents = $this->postProcessResponse($response);
 		if (count($corrected_documents) > 0) {
 			$this->cache->set($cacheKey, $corrected_documents, self::GPTZero_RESPONSE_CACHE_TTL);
 		}
@@ -178,7 +179,7 @@ class GPTZeroAPIService {
 				'User-Agent' => Application::INTEGRATION_USER_AGENT,
 				'X-Api-Key' => $apiToken,
 			];
-			$response = $this->client->post(Application::GPTZero_API_BASE_URL . '/' . 'v2/predict/files', [
+			$response = $this->client->post(Application::GPTZero_API_BASE_URL . '/v2/predict/files', [
 				'body' => $request,
 				'headers' => $headers,
 			]);
@@ -189,9 +190,19 @@ class GPTZeroAPIService {
 				return ['error' => $this->l10n->t('Bad credentials')];
 			} else {
 				$documents = json_decode($body, true);
-				return $this->postprocess_response($documents);
+				return $this->postProcessResponse($documents);
 			}
 		} catch (ClientException $e) {
+			$this->logger->debug('GPTZero API error : '.$e->getMessage(), ['app' => Application::APP_ID]);
+			// in case the response is a json object and it contains an error prop, return its value
+			$response = $e->getResponse();
+			$body = $response->getBody();
+			try {
+				return ['error' => json_decode($body, true)['error']];
+			} catch (Exception | Throwable $e) {
+				return ['error' => $e->getMessage()];
+			}
+		} catch (Exception | Throwable $e) {
 			$this->logger->debug('GPTZero API error : '.$e->getMessage(), ['app' => Application::APP_ID]);
 			return ['error' => $e->getMessage()];
 		}
@@ -202,7 +213,6 @@ class GPTZeroAPIService {
 	}
 
 	/**
-	 * @param string $userId
 	 * @param string $endPoint
 	 * @param array $params
 	 * @param string $method
@@ -210,7 +220,7 @@ class GPTZeroAPIService {
 	 * @return array|mixed|resource|string|string[]
 	 * @throws Exception
 	 */
-	public function request(string $userId, string $endPoint, array $params = [], string $method = 'GET',
+	public function request(string $endPoint, array $params = [], string $method = 'GET',
 							bool $jsonResponse = true) {
 		$apiToken = $this->config->getAppValue(Application::APP_ID, 'api_token');
 		try {
@@ -269,18 +279,18 @@ class GPTZeroAPIService {
 		}
 	}
 
-	private function postprocess_response(array $response): array {
+	private function postProcessResponse(array $response): array {
 		if (!isset($response['documents']))
 			return [];
 		$documents = $response['documents'];
 		$processed = [];
 		foreach ($documents as $document) {
-			$processed[] = $this->postprocess_document($document);
+			$processed[] = $this->postProcessDocument($document);
 		}
 		return $processed;
 	}
 
-	private function postprocess_document(array $response): array {
+	private function postProcessDocument(array $response): array {
 		$processed = [];
 		$processed['average_generated_prob'] = number_format($response['average_generated_prob'] * 100, 2);
 		$processed['completely_generated_prob'] = number_format($response['completely_generated_prob'] * 100, 3);
