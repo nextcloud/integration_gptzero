@@ -28,6 +28,8 @@
 
 namespace OCA\GPTZero\AppInfo;
 
+use OCA\Files\Event\LoadAdditionalScriptsEvent;
+use OCA\GPTZero\Listener\LoadFilesPluginListener;
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use OCP\AppFramework\Bootstrap\IBootContext;
@@ -43,19 +45,10 @@ class Application extends App implements IBootstrap {
 
 	public function __construct(array $urlParams = []) {
 		parent::__construct(self::APP_ID, $urlParams);
-
-		$config = \OCP\Server::get(\OCP\IConfig::class);
-		$fileActionsMenu = $config->getAppValue(self::APP_ID, 'file_actions_menu', '1');
-		$eventDispatcher = \OCP\Server::get(\OCP\EventDispatcher\IEventDispatcher::class);
-		if ($fileActionsMenu === '1') {
-			$eventDispatcher->addListener(\OCA\Files\Event\LoadAdditionalScriptsEvent::class, function () {
-				\OCP\Util::addScript(self::APP_ID, self::APP_ID . '-filesplugin');
-				\OCP\Util::addStyle(self::APP_ID, 'filesplugin');
-			});
-		}
 	}
 
 	public function register(IRegistrationContext $context): void {
+		$context->registerEventListener(LoadAdditionalScriptsEvent::class, LoadFilesPluginListener::class);
 	}
 
 	public function boot(IBootContext $context): void {
