@@ -29,7 +29,7 @@ export default {
 	computed: {
 		generatedProbabilityText() {
 			if (this.sentence.generated_prob === 1) {
-				return t('integration_gptzero', 'Likely by AI model.')
+				return t('integration_gptzero', 'Likely by an AI model.')
 			}
 			return t('integration_gptzero', 'Most likely by a Human.')
 		},

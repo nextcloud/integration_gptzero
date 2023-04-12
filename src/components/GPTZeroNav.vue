@@ -1,7 +1,8 @@
 <template>
 	<NcAppNavigation>
-		<NcAppNavigationCaption
-			:title="historyTitle">
+		<NcAppNavigationItem
+			:name="historyTitle"
+			class="history-title">
 			<template #actions>
 				<NcActionButton @click="saveHistoryToLocalStorage">
 					<template #icon>
@@ -16,7 +17,7 @@
 					{{ t('integration_gtpzero', 'Clear history') }}
 				</NcActionButton>
 			</template>
-		</NcAppNavigationCaption>
+		</NcAppNavigationItem>
 		<template v-if="predictResultsHistory.length > 0" #list>
 			<NcAppNavigationItem v-for="historyItem in predictResultsHistory"
 				:key="historyItemKey(historyItem)"
@@ -59,7 +60,6 @@
 
 <script>
 import NcAppNavigation from '@nextcloud/vue/dist/Components/NcAppNavigation.js'
-import NcAppNavigationCaption from '@nextcloud/vue/dist/Components/NcAppNavigationCaption.js'
 import NcAppNavigationItem from '@nextcloud/vue/dist/Components/NcAppNavigationItem.js'
 import NcEmptyContent from '@nextcloud/vue/dist/Components/NcEmptyContent.js'
 import NcActionButton from '@nextcloud/vue/dist/Components/NcActionButton.js'
@@ -74,7 +74,6 @@ export default {
 	name: 'GPTZeroNav',
 	components: {
 		NcAppNavigation,
-		NcAppNavigationCaption,
 		NcAppNavigationItem,
 		NcEmptyContent,
 		NcActionButton,
@@ -154,5 +153,9 @@ export default {
 	overflow: hidden !important;
 	padding-top: 0 !important;
 	flex: 0 0 auto;
+}
+
+.history-title {
+	font-weight: bold;
 }
 </style>

@@ -1,3 +1,4 @@
-.action-gptzeroscan img {
+.icon-gptzero-file {
+	background-image: url('../img/app-dark.svg');
 	filter: var(--background-invert-if-dark);
 }
