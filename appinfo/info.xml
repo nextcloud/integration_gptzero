@@ -16,6 +16,11 @@
 	<website>https://github.com/cloud-py-api/integration_gptzero</website>
 	<bugs>https://github.com/cloud-py-api/integration_gptzero/issues</bugs>
 	<repository type="git">https://github.com/cloud-py-api/integration_gptzero.git</repository>
+	<screenshot>https://raw.githubusercontent.com/cloud-py-api/integration_gptzero/main/img/1_integration_gptzero.png</screenshot>
+	<screenshot>https://raw.githubusercontent.com/cloud-py-api/integration_gptzero/main/img/3_integration_gptzero.png</screenshot>
+	<screenshot>https://raw.githubusercontent.com/cloud-py-api/integration_gptzero/main/img/5_integration_gptzero.png</screenshot>
+	<screenshot>https://raw.githubusercontent.com/cloud-py-api/integration_gptzero/main/img/6_integration_gptzero.png</screenshot>
+	<screenshot>https://raw.githubusercontent.com/cloud-py-api/integration_gptzero/main/img/7_integration_gptzero.png</screenshot>
 	<dependencies>
 		<nextcloud min-version="26" max-version="27"/>
 	</dependencies>
