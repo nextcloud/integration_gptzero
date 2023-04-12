@@ -42,7 +42,6 @@ function navigateToAppPage(name, context) {
 const supportedMimeTypes = {
 	pdf: 'application/pdf',
 	txt: 'text/plain',
-	md: 'text/markdown',
 	msword: 'application/msword',
 }
 
