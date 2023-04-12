@@ -33,11 +33,6 @@ use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;
 
-/**
- * Class Application
- *
- * @package OCA\GPTZero\AppInfo
- */
 class Application extends App implements IBootstrap {
 	public const APP_ID = 'integration_gptzero';
 
@@ -46,11 +41,6 @@ class Application extends App implements IBootstrap {
 	public const GPTZero_DOMAIN = 'https://gptzero.me';
 	public const GPTZero_SUBDOMAINS = 'https://*.gptzero.me';
 
-	/**
-	 * Constructor
-	 *
-	 * @param array $urlParams
-	 */
 	public function __construct(array $urlParams = []) {
 		parent::__construct(self::APP_ID, $urlParams);
 
