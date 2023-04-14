@@ -26,12 +26,16 @@
 				@focus="readonly = false"
 				@input="onInput">
 		</div>
-		<div class="field">
+		<div class="actions-menu-setting">
 			<NcCheckboxRadioSwitch
 				:checked="state.file_actions_menu"
 				@update:checked="onCheckboxChanged($event, 'file_actions_menu')">
-				{{ t('integration_gptzero', 'Enable GPTZero in the file actions menu (txt, pdf, doc)') }}
+				{{ t('integration_gptzero', 'Enable GPTZero in the file actions menu') }}
 			</NcCheckboxRadioSwitch>
+			<!-- Text about supported file extensions -->
+			<p class="settings-hint">
+				{{ t('integration_gptzero', 'Supported file extensions: {supportedExtensions}', { supportedExtensions: state.supported_action_menu_extensions.join(', ') }) }}
+			</p>
 		</div>
 		<h3>
 			{{ t('integration_gptzero', 'GPTZero results thresholds') }}

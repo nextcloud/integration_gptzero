@@ -26,7 +26,30 @@
 				<FilesSelection v-else
 					:files="selectedFiles"
 					@remove-file-selection="removeFile" />
+				<div class="terms-of-service">
+					<NcCheckboxRadioSwitch :checked.sync="acceptGPTZeroTermsOfService"
+						style="margin-right: 10px; width: 100%; max-width: 460px;">
+						{{ t('integration_gptzero', 'I understand that all data will be sent to the GPTZero service and I agree to the terms and conditions') }}
+					</NcCheckboxRadioSwitch>
+					<NcButton href="https://gptzero.me/terms-of-use.html"
+						target="_blank"
+						type="tertiary"
+						:title="t('integration_gptzero', 'View terms of use')">
+						<template #icon>
+							<OpenInNew :size="18" />
+						</template>
+					</NcButton>
+				</div>
 				<div class="actions">
+					<NcButton :disabled="predicting || !acceptGPTZeroTermsOfService"
+						type="primary"
+						@click="getResults">
+						<template #icon>
+							<span v-if="predicting" class="material-icon icon-loading-small" />
+							<GPTZeroIcon v-else :size="18" />
+						</template>
+						{{ t('integration_gptzero', 'Get results') }}
+					</NcButton>
 					<NcButton type="secondary"
 						style="margin: 0 10px;"
 						@click="selectFiles">
@@ -42,31 +65,6 @@
 							<span class="material-icon icon-close" />
 						</template>
 						{{ t('integration_gptzero', 'Clear') }}
-					</NcButton>
-				</div>
-				<div class="actions actions-between">
-					<div class="terms-of-service">
-						<NcCheckboxRadioSwitch :checked.sync="acceptGPTZeroTermsOfService"
-							style="margin-right: 10px; width: 300px;">
-							{{ t('integration_gptzero', 'I understand that all data will be sent to the GPTZero service and I agree to the terms and conditions') }}
-						</NcCheckboxRadioSwitch>
-						<NcButton href="https://gptzero.me/terms-of-use.html"
-							target="_blank"
-							type="tertiary"
-							:title="t('integration_gptzero', 'View terms of use')">
-							<template #icon>
-								<OpenInNew :size="18" />
-							</template>
-						</NcButton>
-					</div>
-					<NcButton :disabled="predicting"
-						type="primary"
-						@click="getResults">
-						<template #icon>
-							<span v-if="predicting" class="material-icon icon-loading-small" />
-							<GPTZeroIcon v-else :size="18" />
-						</template>
-						{{ t('integration_gptzero', 'Get results') }}
 					</NcButton>
 				</div>
 			</div>
@@ -374,6 +372,7 @@ export default {
 	.terms-of-service {
 		display: flex;
 		align-items: center;
+		margin: 10px 0;
 	}
 
 	.actions {
@@ -400,10 +399,6 @@ export default {
 			button {
 				margin: 5px 0 !important;
 			}
-		}
-
-		.documents {
-			width: 85%;
 		}
 	}
 

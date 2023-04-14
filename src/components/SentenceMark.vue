@@ -1,15 +1,9 @@
 <template>
-	<div class="sentence-mark">
-		<div class="sentence-mark__text"
-			:class="{'sentence-mark__text_generated': sentence.generated_prob === 1}"
-			:v-tooltip="{content: generatedProbabilityText, placement: 'top'}">
+	<div v-tooltip="perplexityText" class="sentence-mark">
+		<p class="sentence-mark__text"
+			:class="{'sentence-mark__text_generated': sentence.generated_prob === 1}">
 			{{ sentence.sentence }}
-		</div>
-		<div class="sentence-mark__generated_prob"
-			:class="{'sentence-mark__generated_prob_generated': sentence.generated_prob === 1}">
-			{{ generatedProbabilityText }}
-			{{ perplexityText }}
-		</div>
+		</p>
 	</div>
 </template>
 
@@ -27,12 +21,6 @@ export default {
 		}
 	},
 	computed: {
-		generatedProbabilityText() {
-			if (this.sentence.generated_prob === 1) {
-				return t('integration_gptzero', 'Likely by an AI model.')
-			}
-			return t('integration_gptzero', 'Most likely by a Human.')
-		},
 		perplexityText() {
 			return t('integration_gptzero', 'Perplexity: {perplexity}', { perplexity: this.sentence.perplexity })
 		},
@@ -47,22 +35,12 @@ export default {
 	margin-bottom: 10px;
 
 	&__text {
-		font-size: 1.1em;
+		display: inline;
+		line-height: 1.25rem;
 
 		&_generated {
 			margin-bottom: 5px;
-		}
-	}
-
-	&__generated_prob {
-		font-size: 0.85em;
-		color: #5b5600;
-
-		&_generated {
-			display: inline;
-			padding: 5px 10px;
-			background-color: #dcdc00;
-			border-radius: var(--border-radius);
+			background-color: rgba(255, 255, 0, 0.5);
 		}
 
 		body[data-theme-dark] &_generated {

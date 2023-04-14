@@ -63,6 +63,7 @@ class Admin implements ISettings {
 		$adminConfig = [
 			'api_token' => $apiToken,
 			'file_actions_menu' => $fileActionsMenu === '1' ? true : false,
+			'supported_action_menu_extensions' => ['txt', 'pdf', 'doc'],
 			'completely_generated_prob_min' => $completelyGeneratedProbMin,
 			'completely_generated_prob_max' => $completelyGeneratedProbMax,
 			'average_generated_prob' => $averageGeneratedProb,
