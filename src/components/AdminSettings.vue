@@ -32,15 +32,14 @@
 				@update:checked="onCheckboxChanged($event, 'file_actions_menu')">
 				{{ t('integration_gptzero', 'Enable GPTZero in the file actions menu') }}
 			</NcCheckboxRadioSwitch>
-			<!-- Text about supported file extensions -->
 			<p class="settings-hint">
 				{{ t('integration_gptzero', 'Supported file extensions: {supportedExtensions}', { supportedExtensions: state.supported_action_menu_extensions.join(', ') }) }}
 			</p>
 		</div>
-		<h3>
+		<h3 class="threshold-heading">
 			{{ t('integration_gptzero', 'GPTZero results thresholds') }}
-			<a class="external" href="https://app.gptzero.me/app/api">
-				{{ t('integration_gptzero', 'Docs') }}
+			<a class="external" href="https://github.com/nextcloud/integration_gptzero#gptzero-results">
+				<HelpCircle :size="20" class="material-icon" />
 			</a>
 		</h3>
 		<p>{{ t('integration_gptzero', 'This values will be used to show the textual results of scan') }}</p>
@@ -100,11 +99,13 @@ import NcCheckboxRadioSwitch from '@nextcloud/vue/dist/Components/NcCheckboxRadi
 
 import GPTZeroIcon from './icons/GPTZeroIcon.vue'
 import KeyIcon from 'vue-material-design-icons/Key.vue'
+import HelpCircle from 'vue-material-design-icons/HelpCircle.vue'
 
 export default {
 	name: 'AdminSettings',
 	components: {
 		NcCheckboxRadioSwitch,
+		HelpCircle,
 		GPTZeroIcon,
 		KeyIcon,
 	},
@@ -197,6 +198,15 @@ export default {
 		display: flex;
 		.gptzero-icon {
 			margin-right: 12px;
+		}
+	}
+
+	.threshold-heading {
+		display: flex;
+		align-items: center;
+
+		a {
+			margin-left: 10px;
 		}
 	}
 }
