@@ -73,13 +73,13 @@ export default {
 .files-selection {
 	width: 80%;
 	max-width: 700px;
-	margin: 10px auto;
+	margin: 3px auto;
 
 	&__files {
 		border: 1px solid var(--color-border-dark);
 		border-radius: var(--border-radius);
 		padding: 10px;
-		max-height: 222px;
+		height: 130px;
 		overflow-y: auto;
 	}
 }

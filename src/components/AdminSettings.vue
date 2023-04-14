@@ -30,7 +30,7 @@
 			<NcCheckboxRadioSwitch
 				:checked="state.file_actions_menu"
 				@update:checked="onCheckboxChanged($event, 'file_actions_menu')">
-				{{ t('integration_gptzero', 'Enable GPTZero file actions menu') }}
+				{{ t('integration_gptzero', 'Enable GPTZero in the file actions menu (txt, pdf, doc)') }}
 			</NcCheckboxRadioSwitch>
 		</div>
 		<h3>

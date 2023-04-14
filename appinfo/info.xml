@@ -10,17 +10,17 @@
 	<author mail="bigcat88@icloud.com" homepage="https://github.com/bigcat88">Alexander Piskun</author>
 	<namespace>GPTZero</namespace>
 	<documentation>
-		<developer>https://github.com/cloud-py-api/integration_gptzero</developer>
+		<developer>https://github.com/nextcloud/integration_gptzero</developer>
 	</documentation>
 	<category>integration</category>
-	<website>https://github.com/cloud-py-api/integration_gptzero</website>
-	<bugs>https://github.com/cloud-py-api/integration_gptzero/issues</bugs>
-	<repository type="git">https://github.com/cloud-py-api/integration_gptzero.git</repository>
-	<screenshot>https://raw.githubusercontent.com/cloud-py-api/integration_gptzero/main/img/1_integration_gptzero.png</screenshot>
-	<screenshot>https://raw.githubusercontent.com/cloud-py-api/integration_gptzero/main/img/3_integration_gptzero.png</screenshot>
-	<screenshot>https://raw.githubusercontent.com/cloud-py-api/integration_gptzero/main/img/5_integration_gptzero.png</screenshot>
-	<screenshot>https://raw.githubusercontent.com/cloud-py-api/integration_gptzero/main/img/6_integration_gptzero.png</screenshot>
-	<screenshot>https://raw.githubusercontent.com/cloud-py-api/integration_gptzero/main/img/7_integration_gptzero.png</screenshot>
+	<website>https://github.com/nextcloud/integration_gptzero</website>
+	<bugs>https://github.com/nextcloud/integration_gptzero/issues</bugs>
+	<repository type="git">https://github.com/nextcloud/integration_gptzero.git</repository>
+	<screenshot>https://raw.githubusercontent.com/nextcloud/integration_gptzero/main/img/1_integration_gptzero.png</screenshot>
+	<screenshot>https://raw.githubusercontent.com/nextcloud/integration_gptzero/main/img/3_integration_gptzero.png</screenshot>
+	<screenshot>https://raw.githubusercontent.com/nextcloud/integration_gptzero/main/img/5_integration_gptzero.png</screenshot>
+	<screenshot>https://raw.githubusercontent.com/nextcloud/integration_gptzero/main/img/6_integration_gptzero.png</screenshot>
+	<screenshot>https://raw.githubusercontent.com/nextcloud/integration_gptzero/main/img/7_integration_gptzero.png</screenshot>
 	<dependencies>
 		<nextcloud min-version="26" max-version="27"/>
 	</dependencies>
