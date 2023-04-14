@@ -9,13 +9,13 @@
 		"detect",
 		"AI"
 	],
-	"homepage": "https://github.com/cloud_py_api/integration_gptzero",
+	"homepage": "https://github.com/nextcloud/integration_gptzero",
 	"bugs": {
-		"url": "https://github.com/cloud_py_api/integration_gptzero/issues"
+		"url": "https://github.com/nextcloud/integration_gptzero/issues"
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/cloud-py-api/integration_gptzero"
+		"url": "https://github.com/nextcloud/integration_gptzero"
 	},
 	"license": "AGPL-3.0",
 	"private": true,
