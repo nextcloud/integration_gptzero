@@ -26,21 +26,24 @@
 				<FilesSelection v-else
 					:files="selectedFiles"
 					@remove-file-selection="removeFile" />
-				<div class="terms-of-service">
-					<NcCheckboxRadioSwitch :checked.sync="acceptGPTZeroTermsOfService"
-						style="margin-right: 10px; width: 100%; max-width: 460px;">
-						{{ t('integration_gptzero', 'I understand that all data will be sent to the GPTZero service and I agree to the terms and conditions') }}
-					</NcCheckboxRadioSwitch>
-					<NcButton href="https://gptzero.me/terms-of-use.html"
-						target="_blank"
-						type="tertiary"
-						:title="t('integration_gptzero', 'View terms of use')">
-						<template #icon>
-							<OpenInNew :size="18" />
-						</template>
-					</NcButton>
-				</div>
-				<div class="actions">
+				<div class="actions-between">
+					<div class="actions">
+						<NcButton type="secondary" @click="selectFiles">
+							<template #icon>
+								<FileMultiple :size="20" />
+							</template>
+							{{ selectFilesButtonText }}
+						</NcButton>
+						<NcButton v-if="selectedFiles.length > 0 || text.length > 0"
+							type="tertiary"
+							:aria-label="t('integration_gptzero', 'Clear inputs')"
+							@click="clearInputs">
+							<template #icon>
+								<span class="material-icon icon-close" />
+							</template>
+							{{ t('integration_gptzero', 'Clear') }}
+						</NcButton>
+					</div>
 					<NcButton :disabled="predicting || !acceptGPTZeroTermsOfService"
 						type="primary"
 						@click="getResults">
@@ -50,21 +53,19 @@
 						</template>
 						{{ t('integration_gptzero', 'Get results') }}
 					</NcButton>
-					<NcButton type="secondary"
-						style="margin: 0 10px;"
-						@click="selectFiles">
+				</div>
+				<div class="terms-of-service">
+					<NcCheckboxRadioSwitch :checked.sync="acceptGPTZeroTermsOfService"
+						style="margin-right: 10px; width: 100%; max-width: 700px; font-size: 14px;">
+						{{ t('integration_gptzero', 'I understand that all data will be sent to the GPTZero service and I agree to the terms and conditions') }}
+					</NcCheckboxRadioSwitch>
+					<NcButton href="https://gptzero.me/terms-of-use.html"
+						target="_blank"
+						type="tertiary"
+						:title="t('integration_gptzero', 'View terms of use')">
 						<template #icon>
-							<FileMultiple :size="20" />
+							<OpenInNew :size="18" />
 						</template>
-						{{ selectFilesButtonText }}
-					</NcButton>
-					<NcButton type="tertiary"
-						:aria-label="t('integration_gptzero', 'Clear inputs')"
-						@click="clearInputs">
-						<template #icon>
-							<span class="material-icon icon-close" />
-						</template>
-						{{ t('integration_gptzero', 'Clear') }}
 					</NcButton>
 				</div>
 			</div>
@@ -384,6 +385,8 @@ export default {
 		&-between {
 			width: 100%;
 			max-width: 700px;
+			display: flex;
+			align-items: center;
 			justify-content: space-between;
 		}
 	}
@@ -404,7 +407,6 @@ export default {
 
 	h2 {
 		display: flex;
-		justify-content: center;
 
 		.gptzero-icon {
 			margin-right: 10px;
@@ -412,11 +414,9 @@ export default {
 	}
 
 	&-heading {
-		margin: 0 0 20px;
-
-		.description {
-			text-align: center;
-		}
+		width: 100%;
+		max-width: 700px;
+		margin: 0 auto 20px;
 
 		.pre-caution {
 			display: flex;

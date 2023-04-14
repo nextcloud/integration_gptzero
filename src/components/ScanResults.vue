@@ -187,5 +187,11 @@ export default {
 			margin-left: 10px;
 		}
 	}
+
+	.sentences {
+		border: 1px solid var(--color-border-dark);
+		border-radius: var(--border-radius);
+		padding: 5px 10px;
+	}
 }
 </style>

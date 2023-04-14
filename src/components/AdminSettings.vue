@@ -5,9 +5,9 @@
 			{{ t('integration_gptzero', 'GPTZero integration') }}
 		</h2>
 		<p class="settings-hint">
-			{{ t('integration_gptzero', 'You can obtain it in your GPTZero app dashboard.') }}
+			{{ t('integration_gptzero', 'Find your GPTZero API key on your GPTZero dashboard.') }}
 			<a class="external" href="https://app.gptzero.me/app/api">
-				{{ t('integration_gptzero', 'GPTZero API keys') }}
+				{{ t('integration_gptzero', 'GPTZero Dashboard API keys') }}
 			</a>
 		</p>
 		<p class="settings-hint">
@@ -39,6 +39,9 @@
 		</div>
 		<h3>
 			{{ t('integration_gptzero', 'GPTZero results thresholds') }}
+			<a class="external" href="https://app.gptzero.me/app/api">
+				{{ t('integration_gptzero', 'Docs') }}
+			</a>
 		</h3>
 		<p>{{ t('integration_gptzero', 'This values will be used to show the textual results of scan') }}</p>
 		<div class="threshold">

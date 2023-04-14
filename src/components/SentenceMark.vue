@@ -40,11 +40,7 @@ export default {
 
 		&_generated {
 			margin-bottom: 5px;
-			background-color: rgba(255, 255, 0, 0.5);
-		}
-
-		body[data-theme-dark] &_generated {
-			color: #000;
+			background-color: rgba(var(--color-warning-rgb), 0.2);
 		}
 	}
 }
