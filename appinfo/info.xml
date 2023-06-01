@@ -34,7 +34,7 @@ else:
 ```
 	]]>
 	</description>
-	<version>0.1.1</version>
+	<version>0.1.2</version>
 	<licence>agpl</licence>
 	<author mail="andrey18106x@gmail.com" homepage="https://github.com/andrey18106">Andrey Borysenko</author>
 	<author mail="bigcat88@icloud.com" homepage="https://github.com/bigcat88">Alexander Piskun</author>
@@ -61,7 +61,7 @@ else:
 		<navigation>
 			<name>GPTZero</name>
 			<route>integration_gptzero.page.index</route>
-			<order>1</order>
+			<order>20</order>
 		</navigation>
 	</navigations>
 </info>

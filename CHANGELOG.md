@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.2 - 2023-06-01]
+### Changed
+- changed menu entry order
+
 ## [0.1.1 - 2023-04-22]
 ### Changed
 - dependency update and maintenance
