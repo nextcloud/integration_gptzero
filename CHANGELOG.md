@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.3 - 2023-07-12]
+### Added
+- added ethical AI rating
+
 ## [0.1.2 - 2023-06-01]
 ### Changed
 - changed menu entry order
