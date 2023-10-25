@@ -1,35 +1,35 @@
 <template>
-  <div v-tooltip="perplexityText" class="sentence-mark">
-    <p class="sentence-mark__text"
-      :class="{'sentence-mark__text_generated': likelyGenerated}">
-      {{ sentence.sentence }}
-    </p>
-  </div>
+	<div v-tooltip="perplexityText" class="sentence-mark">
+		<p class="sentence-mark__text"
+			:class="{'sentence-mark__text_generated': likelyGenerated}">
+			{{ sentence.sentence }}
+		</p>
+	</div>
 </template>
 
 <script>
 export default {
-  name: 'SentenceMark',
-  props: {
-    sentence: {
-      type: Object,
-      required: true,
-    },
-  },
-  data() {
-    return {
-    }
-  },
-  computed: {
-    perplexityText() {
-      return t('integration_gptzero', 'Perplexity: {perplexity}', { perplexity: this.sentence.perplexity })
-    },
-    likelyGenerated() {
-      return this.sentence.generated_prob === 1 || this.sentence.generated_prob >= 0.9 || this.sentence?.highlight_for_ai
-    },
-  },
-  methods: {
-  },
+	name: 'SentenceMark',
+	props: {
+		sentence: {
+			type: Object,
+			required: true,
+		},
+	},
+	data() {
+		return {
+		}
+	},
+	computed: {
+		perplexityText() {
+			return t('integration_gptzero', 'Perplexity: {perplexity}', { perplexity: this.sentence.perplexity })
+		},
+		likelyGenerated() {
+			return this.sentence.generated_prob === 1 || this.sentence.generated_prob >= 0.9 || this.sentence?.highlight_for_ai
+		},
+	},
+	methods: {
+	},
 }
 </script>
 
