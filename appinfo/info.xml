@@ -44,7 +44,7 @@ else:
 ```
 	]]>
 	</description>
-	<version>0.1.3</version>
+	<version>0.1.4</version>
 	<licence>agpl</licence>
 	<author mail="andrey18106x@gmail.com" homepage="https://github.com/andrey18106">Andrey Borysenko</author>
 	<author mail="bigcat88@icloud.com" homepage="https://github.com/bigcat88">Alexander Piskun</author>
@@ -61,7 +61,7 @@ else:
 	<screenshot>https://raw.githubusercontent.com/nextcloud/integration_gptzero/main/screenshots/5_integration_gptzero.png</screenshot>
 	<screenshot>https://raw.githubusercontent.com/nextcloud/integration_gptzero/main/screenshots/6_integration_gptzero.png</screenshot>
 	<dependencies>
-		<nextcloud min-version="26" max-version="27"/>
+		<nextcloud min-version="26" max-version="28"/>
 	</dependencies>
 	<settings>
 		<admin>OCA\GPTZero\Settings\Admin</admin>

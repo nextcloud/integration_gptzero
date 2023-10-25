@@ -6,6 +6,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.4 - 2023-10-25]
+
+Maintenance update
+
+### Added
+
+- Added support of Nextcloud 28
+
+### Changed
+
+- Updated packages
+- Updated l10n (localization)
+
+### Fixed
+
+- Fixed likely generated sentences highlight
+
 ## [0.1.3 - 2023-07-12]
 ### Added
 - added ethical AI rating
