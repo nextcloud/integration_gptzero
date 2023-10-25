@@ -35,16 +35,16 @@ export default {
 
 <style lang="scss" scoped>
 .sentence-mark {
-  margin-bottom: 10px;
+	margin-bottom: 10px;
 
-  &__text {
-    display: inline;
-    line-height: 1.25rem;
+	&__text {
+		display: inline;
+		line-height: 1.25rem;
 
-    &_generated {
-      margin-bottom: 5px;
-      background-color: rgba(var(--color-warning-rgb), 0.2);
-    }
-  }
+		&_generated {
+			margin-bottom: 5px;
+			background-color: rgba(var(--color-warning-rgb), 0.2);
+		}
+	}
 }
 </style>
